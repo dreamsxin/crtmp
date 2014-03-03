@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+				xmlns:local="*"
+				xmlns:rtmpd="com.rtmpd.*"
+				backgroundColor="black" borderColor="#BABABA" color="white"
+				creationComplete="ConnectToServer();" layout="absolute">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.effects.easing.Back;
+			import mx.managers.PopUpManager;
+			import mx.utils.ObjectUtil;
+			private var _connection:NetConnection;
+			[Bindable]
+			private var _availableFlvs:Array;
+			private var _timer:Object;
+			
+			[Bindable(event="IsConnectedChanged")]
+			private function get IsConnected():Boolean{
+				if(_connection!=null)
+					return _connection.connected;
+				return false;
+			}
+			
+			[Bindable(event="AvailableFlvsChanged")]
+			private function get AvailableFlvs():Array{
+				if(!IsConnected){
+					_availableFlvs=new Array();
+				}
+				if(_availableFlvs==null)
+					_availableFlvs=new Array();
+				return _availableFlvs;
+			}
+			
+			private function FireEvents():void{
+				dispatchEvent(new Event("IsConnectedChanged"));
+				dispatchEvent(new Event("AvailableFlvsChanged"));
+			}
+			
+			private function ConnectToServer():void{
+				video.Init(cplabel);
+				_connection=new NetConnection();
+				_connection.proxyType="best";
+//				Alert.show(_connection.proxyType);
+//				Alert.show(flash.system.Capabilities.serverString);
+				//_connection.objectEncoding = flash.net.ObjectEncoding.AMF0;
+				_connection.addEventListener(NetStatusEvent.NET_STATUS,ConnectionStatus);
+				_connection.connect(connectingString.text);
+				_connection.client=this;
+				_timer = setInterval(FireVideoDisplayTitleChanged, 1000);
+			}
+			
+			private function ConnectionStatus(event:NetStatusEvent):void{
+				_availableFlvs=new Array();
+				_availableFlvs.push({flvName:"mp4:112.flv"});
+				FireEvents();
+				if(IsConnected){
+					_connection.call("getAvailableFlvs",null);
+				}
+			}
+			
+			private function ConnectDisconnect():void{
+				if(IsConnected){
+					_connection.close();
+					_connection=null;
+					video.Reset();
+				}
+				else{
+					ConnectToServer();
+				}
+				FireEvents();
+			}
+			
+			public function SetAvailableFlvs(flvs:Array):void{
+				_availableFlvs=new Array();
+				for(var i:int=0;i<flvs.length;i++)
+					_availableFlvs.push({flvName:flvs[i]});
+				_availableFlvs.push({flvName:"live"});
+				FireEvents();
+			}
+			
+			private function PlayStream():void{
+				if((dgFlvs.selectedIndex<0)
+					&&(streamName.text=="")){
+					Alert.show("Please select a flv first");
+					return;
+				}
+				var bt:Number=Number(txtBufferTime.text);
+				InitializeVideo(streamName.text, bt);
+			}
+			
+			private function InitializeVideo(streamName:String,bufferTime:Number):void
+			{
+				video.PlayStream(_connection,streamName,bufferTime);				
+			}
+			
+			[Bindable(event="VideoDisplayTitleChanged")]
+			private function get VideoDisplayTitle():String{
+				var result:String="";
+				result="Video display. Buffer: "+video.BufferLength;
+				result+="; Time head: "+video.TimeHead;
+				return result;
+			}
+						
+			private function FireVideoDisplayTitleChanged():void{
+				dispatchEvent(new Event("VideoDisplayTitleChanged"));
+			}
+			
+			private function Black():uint{
+				return 0;
+			}
+			
+			private function FullScreen():void{
+				FlexGlobals.topLevelApplication.stage.addEventListener(FullScreenEvent.FULL_SCREEN, fullScreenHandler);
+				FlexGlobals.topLevelApplication.stage.fullScreenSourceRect=video.VideoRect;
+				FlexGlobals.topLevelApplication.stage.displayState = StageDisplayState.FULL_SCREEN;
+			}
+			
+			private function fullScreenHandler(evt:FullScreenEvent):void {
+                if (evt.fullScreen) {
+                	controls.width=0;
+                } else {
+                    controls.width=200;
+                }
+            }
+            
+            private function LastOnMetaData():void{
+            	var mi:MetadataView=MetadataView(PopUpManager.createPopUp(this,MetadataView,true));
+            	mi.Init(video.LastOnMetaData());
+            	PopUpManager.centerPopUp(mi);
+            	//Alert.show(video.LastOnMetaData());
+            }
+            
+            private function InsertMetadata():void{
+            	_connection.call("insertMetadata",null,video.StreamName,{width:640,height:480,date:new Date()});
+            }
+            
+            private function SeekTo():void{
+            	video.SeekTo(30);
+            }
+            
+            private function Pause():void{
+            	video.Pause();
+            }
+            
+            private function Resume():void{
+            	video.Resume();
+            }
+			
+			private function Next():void{
+				if(dgFlvs.selectedIndex<0){
+					Alert.show("Please select a flv first");
+					return;
+				}
+				if((dgFlvs.selectedIndex+1)<_availableFlvs.length){
+					dgFlvs.selectedIndex++;
+					var bt:Number=Number(txtBufferTime.text);
+					InitializeVideo(_availableFlvs[dgFlvs.selectedIndex].flvName,bt);
+					video.SeekTo(5);
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%" height="100%">
+		<mx:Panel id="videoPanel" width="100%" height="100%" backgroundColor="black"
+				  title="{VideoDisplayTitle}">
+			<rtmpd:MyVideo id="video" width="100%" height="100%"/>
+		</mx:Panel>
+		<mx:VBox id="controls" width="200" height="100%">
+			<mx:Button id="fullScreen" label="Full Screen" click="FullScreen()"/>
+			<mx:Button id="lastInMetaData" label="Last onMetaData" click="LastOnMetaData()"/>
+			<mx:Button id="insertMetadata" label="Insert metadata from player"
+					   click="InsertMetadata()"/>
+			<mx:Button id="seek" label="seekTo 00:30" click="SeekTo()"/>
+			<mx:Button id="pause" label="Pause" click="Pause()"/>
+			<mx:Button id="resume" label="Resume" click="Resume()"/>
+			<mx:Button id="next" label="Next" click="Next()"/>
+			<mx:Label id="cplabel"/>
+			<mx:Panel width="100%" height="100%" title="Available FLVs">
+				<mx:DataGrid id="dgFlvs" width="100%" height="100%"
+							 alternatingItemColors="[#030303, #404040]"
+							 dataProvider="{AvailableFlvs}" headerHeight="0">
+					<mx:columns>
+						<mx:DataGridColumn dataField="flvName" headerText=""/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:Panel>
+			<mx:TextInput id="txtBufferTime" width="100%" backgroundColor="#404040" text="0"/>
+			<mx:TextInput id="streamName" width="100%" backgroundColor="#404040"
+						  text="{_availableFlvs[dgFlvs.selectedIndex].flvName}"/>
+			<mx:Label text="Connecting string"/>
+			<mx:TextInput id="connectingString" width="100%" backgroundColor="#404040"
+						  text="rtmp://127.0.0.1/flvplayback"/>
+			<mx:HBox width="100%">
+				<mx:Button width="100%" label="{IsConnected?'Disconnect':'Connect'}"
+						   click="ConnectDisconnect();"/>
+				<mx:Button width="100%" label="Play" click="PlayStream();" enabled="{IsConnected}"/>	
+			</mx:HBox>
+		</mx:VBox>
+	</mx:HBox>
+</mx:Application>

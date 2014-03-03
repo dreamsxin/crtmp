@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="300" 
+	backgroundColor="black">
+	<mx:Script>
+		<![CDATA[
+			import com.rtmpd.generics.Connection;
+			import com.rtmpd.generics.Logging;
+			
+			import mx.controls.TextArea;
+			import mx.utils.ObjectUtil;
+			
+			private var _stream:NetStream;
+			private var _video:Video;
+			
+			public function Initialize(... args):void
+			{
+				try{	
+					if(_video!=null){
+						rawChildren.removeChild(_video);
+						_video=null;
+					}
+					_video=new Video(width,height);
+					rawChildren.addChild(_video);
+					var i:Number=0;
+					for(i=0;i<args.length;i++){
+						rawChildren.addChild(args[i]);
+					}
+					
+					Logging.Debug("VideoPlayer init done");
+				}catch(e:Error){
+					Logging.Error(ObjectUtil.toString(e));
+				}
+			}
+			
+//			private function ShowHideInfo(evt:Event):void{
+//				_info.width=_info.width==0?width:0;
+//				_info.height=_info.height==0?height-_showInfo.height:0;
+//			}
+			
+			public function Play(connection:Connection, streamName:String):void{
+				Logging.Debug("Play stream "+streamName);
+				if(_stream!=null){
+					_video.attachNetStream(null);
+					_stream.close();
+					_stream=null;
+				}
+				_stream=connection.GetStream();
+				_stream.play(streamName);
+				_stream.bufferTime=1;
+				_video.attachNetStream(_stream);
+			}
+			
+			public function TogglePause():void{
+				if(_stream==null)
+					return;
+				_stream.togglePause();
+			}
+			
+			public function Seek(offset:Number):void{
+				if(_stream==null)
+					return;
+				_stream.seek(offset);
+			}
+			
+			public function set Camera(camera:Camera):void{
+				_video.attachCamera(camera);
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

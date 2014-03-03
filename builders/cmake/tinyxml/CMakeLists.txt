@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 2.6)
+PROJECT(tinyxml)
+
+#make the list with all the source files
+FILE(GLOB_RECURSE SOURCES "${CRTMPSERVER_3RDPARTY_ROOT}/tinyxml/*.cpp" )
+
+#prepare the include directories
+INCLUDE_DIRECTORIES(
+	${TINYXML_INCLUDE_PATH}
+)
+
+#create the library
+ADD_LIBRARY(${PROJECT_NAME} ${LIB_TYPE} ${SOURCES})
+IF(${LIB_TYPE} MATCHES "SHARED")
+    INSTALL(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION ${CRTMPSERVER_ROOT})
+ENDIF(${LIB_TYPE} MATCHES "SHARED")
+

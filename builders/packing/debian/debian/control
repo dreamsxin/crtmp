@@ -1,0 +1,34 @@
+Source: crtmpserver
+Section: video
+Priority: optional
+Maintainer: Andriy Beregovenko <jet@jet.kiev.ua>
+Build-Depends: cmake,
+ debhelper (>= 7.0.50~),
+ liblua5.1-0-dev,
+ libssl-dev,
+ libtinyxml-dev
+Standards-Version: 3.9.1
+Homepage: http://www.rtmpd.com
+
+Package: crtmpserver
+Architecture: any
+Depends: ${shlibs:Depends}, 
+ ${misc:Depends},
+ openssl,
+ liblua5.1-0,
+ libtinyxml2.5.3 | libtinyxml2.6.2
+Pre-Depends: adduser
+Description: High performance RTMP/RTSP streaming server
+ crtmpserver is a high performance streaming server able to stream
+ (live or recorded) in the following technologies:
+  - To and from Flash (RTMP,RTMPE, RTMPS, RTMPT, RTMPTE)
+  - To and from embedded devices: iPhone, Android
+  - From surveillance cameras
+  - IP-TV using MPEG-TS and RTSP/RTCP/RTP protocols
+ .
+ Also, crtmpserver can be used as a high performance rendes-vous server.
+ For example, it enables you to do:
+  - Audio/Video conferencing
+  - Online gaming
+  - Online collaboration
+  - Simple/complex chat applications

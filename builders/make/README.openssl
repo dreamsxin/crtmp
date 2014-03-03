@@ -1,0 +1,14 @@
+1. do the export
+export cross=/opt/FriendlyARM/toolschain/4.4.3/bin/arm-linux-
+
+2. call configure
+./Configure no-threads --prefix=/opt/FriendlyARM/openssl --openssldir=/opt/FriendlyARM/openssl no-asm linux-armv4
+
+#SHARED_LDFLAGS = -Wl,-rpath,"\$$$$ORIGIN"
+
+3. compile
+make CC="${cross}gcc" AR="${cross}ar r" RANLIB="${cross}ranlib"
+
+4. install
+make install
+

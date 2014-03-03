@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="89">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <itemPath>../../../../sources/crtmpserver/src/crtmpserver.cpp</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false">
+      <itemPath>Makefile.nb</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceRootList>
+    <Elem>../../../../sources/crtmpserver/include</Elem>
+    <Elem>../../../../sources/crtmpserver/src</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile.nb</projectmakefile>
+  <confs>
+    <conf name="Debug" type="1">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>GNU|GNU</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <incDir>
+            <pElem>/opt/local/include</pElem>
+            <pElem>../../../../sources/common/include</pElem>
+            <pElem>../../../../sources/thelib/include</pElem>
+            <pElem>../../../../sources/crtmpserver/include</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>COMPILE_STATIC</Elem>
+            <Elem>HAS_APP_EVOROUTER</Elem>
+            <Elem>HAS_APP_HTTPTESTS</Elem>
+            <Elem>HAS_APP_LMINTERFACE</Elem>
+            <Elem>NET_KQUEUE</Elem>
+            <Elem>OSX</Elem>
+          </preprocessorList>
+        </ccTool>
+        <linkerTool>
+          <output>../${CND_CONF}/${CND_PLATFORM}/rtmpserver</output>
+          <linkerLibItems>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../thelib"
+                            CT="2"
+                            CN="Debug"
+                            AC="true"
+                            BL="true"
+                            WD="../thelib"
+                            BC="${MAKE}  -f Makefile.nb CONF=Debug"
+                            CC="${MAKE}  -f Makefile.nb CONF=Debug clean"
+                            OP="../Debug/GNU-MacOSX/libthelib.dylib">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../common"
+                            CT="2"
+                            CN="Debug"
+                            AC="true"
+                            BL="true"
+                            WD="../common"
+                            BC="${MAKE}  -f Makefile.nb CONF=Debug"
+                            CC="${MAKE}  -f Makefile.nb CONF=Debug clean"
+                            OP="dist/Debug/GNU-MacOSX/libcommon.dylib">
+              </makeArtifact>
+            </linkerLibProjectItem>
+          </linkerLibItems>
+          <commandLine>-L/opt/local/lib -llua</commandLine>
+        </linkerTool>
+      </compileType>
+      <item path="../../../../sources/crtmpserver/src/crtmpserver.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>GNU|GNU</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+          <incDir>
+            <pElem>/opt/local/include</pElem>
+            <pElem>../../../../sources/common/include</pElem>
+            <pElem>../../../../sources/thelib/include</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>NET_KQUEUE</Elem>
+            <Elem>OSX</Elem>
+          </preprocessorList>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <linkerTool>
+          <output>../${CND_CONF}/${CND_PLATFORM}/rtmpserver</output>
+          <linkerLibItems>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../common"
+                            CT="2"
+                            CN="Release"
+                            AC="false"
+                            BL="true"
+                            WD="../common"
+                            BC="${MAKE}  -f Makefile.nb CONF=Release"
+                            CC="${MAKE}  -f Makefile.nb CONF=Release clean"
+                            OP="dist/Release/GNU-MacOSX/libcommon.dylib">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../thelib"
+                            CT="2"
+                            CN="Release"
+                            AC="false"
+                            BL="true"
+                            WD="../thelib"
+                            BC="${MAKE}  -f Makefile.nb CONF=Release"
+                            CC="${MAKE}  -f Makefile.nb CONF=Release clean"
+                            OP="../Release/GNU-MacOSX/libthelib.dylib">
+              </makeArtifact>
+            </linkerLibProjectItem>
+          </linkerLibItems>
+          <commandLine>-L/opt/local/lib -llua</commandLine>
+        </linkerTool>
+      </compileType>
+      <item path="../../../../sources/crtmpserver/src/crtmpserver.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>

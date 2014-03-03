@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set -e
+
+USER="crtmpserver"
+GROUP="adm"
+
+chown $USER:$GROUP /var/lib/crtmpserver
+chown $USER:$GROUP /var/log/crtmpserver
+
+#DEBHELPER#
+

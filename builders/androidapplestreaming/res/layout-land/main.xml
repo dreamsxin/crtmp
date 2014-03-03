@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+   android:orientation="horizontal"
+   android:layout_width="fill_parent"
+   android:layout_height="fill_parent"
+   xmlns:android="http://schemas.android.com/apk/res/android"
+   >
+  <LinearLayout
+     android:orientation="vertical"
+     android:layout_height="wrap_content"
+     android:layout_width="wrap_content"
+     >
+    <ImageButton android:id="@+id/play"
+                 android:layout_height="wrap_content"
+                 android:layout_width="wrap_content"
+                 android:src="@drawable/play"/>
+    <ImageButton android:id="@+id/stop"
+                 android:layout_height="wrap_content"
+                 android:layout_width="wrap_content"
+                 android:src="@drawable/stop"/>
+    <ImageButton android:id="@+id/quit"
+                 android:layout_height="wrap_content"
+                 android:layout_width="wrap_content"
+                 android:src="@drawable/quit"/>
+  </LinearLayout>
+  <LinearLayout
+     android:orientation="vertical"
+     android:layout_height="fill_parent"
+     android:layout_width="fill_parent"
+     >
+    <VideoView android:id="@+id/surface_view"
+	       android:layout_width="fill_parent"
+	       android:layout_height="wrap_content"
+	       >
+    </VideoView>
+  </LinearLayout>
+</LinearLayout>
