@@ -35,6 +35,27 @@ RTMPAppProtocolHandler::RTMPAppProtocolHandler(Variant &configuration)
 RTMPAppProtocolHandler::~RTMPAppProtocolHandler() {
 }
 
+bool RTMPAppProtocolHandler::ProcessInvokeConnect(BaseRTMPProtocol *pFrom,
+		Variant &request) {
+	//1. Get the username and the password
+	Variant &username = M_INVOKE_PARAM(request, 1);
+	Variant &password = M_INVOKE_PARAM(request, 2);
+	if (username != V_STRING || password != V_STRING) {
+		FATAL("Invalid connect request:\n%s", STR(request.ToString()));
+		return false;
+	}
+
+	//2. ***VERY*** basic authentication to get the ball rolling
+	if ((username != "test" || password != "guosheng") &&(username != "test1" || password != "guosheng")){
+		FATAL("Auth failed");
+		return false;
+	}
+
+	//3. Auth passes
+	return BaseRTMPAppProtocolHandler::ProcessInvokeConnect(pFrom, request);
+}
+
+
 bool RTMPAppProtocolHandler::ProcessInvokeGeneric(BaseRTMPProtocol *pFrom,
 		Variant &request) {
 

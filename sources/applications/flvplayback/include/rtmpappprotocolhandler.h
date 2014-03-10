@@ -31,7 +31,7 @@ namespace app_flvplayback {
 	public:
 		RTMPAppProtocolHandler(Variant &configuration);
 		virtual ~RTMPAppProtocolHandler();
-
+		virtual bool ProcessInvokeConnect(BaseRTMPProtocol *pFrom, Variant &request);
 		virtual bool ProcessInvokeGeneric(BaseRTMPProtocol *pFrom,
 				Variant &request);
 	private:
