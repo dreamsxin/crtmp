@@ -179,26 +179,26 @@ configuration=
 					--default values. The only mandatory property is
 					--mediaFolder
 					description="Some storage",
-					mediaFolder="/Volumes/Storage/media/",
-					metaFolder="/tmp/metadata",
-					enableStats=false,
+					mediaFolder="/tmp/Storage/media/",
+					metaFolder="/tmp/Storage",
+					enableStats=true,
 					clientSideBuffer=15,
 					keyframeSeek=false,
 					seekGranularity=0.1,
 				},
 				namedStorage2={
-					mediaFolder="/Volumes/Storage/media/mp4",
-					metaFolder="/tmp/metadata",
+					mediaFolder="/tmp/Storage/media/mp4",
+					metaFolder="/tmp/Storage",
 					seekGranularity=0.2,
 					enableStats=true,
 				},
 				namedStorage3={
-					mediaFolder="/Volumes/Storage/media/flv",
-					metaFolder="/tmp/metadata",
+					mediaFolder="/tmp/Storage/media/flv",
+					metaFolder="/tmp/Storage",
 				},
 				{
 					--this one doesn't have a name
-					mediaFolder="/Volumes/Storage/media/mp3",
+					mediaFolder="/tmp/Storage/media/mp3",
 				}
 			},
 		},

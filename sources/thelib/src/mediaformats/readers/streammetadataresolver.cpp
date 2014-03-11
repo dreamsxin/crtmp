@@ -131,6 +131,7 @@ bool StreamMetadataResolver::Initialize(Variant &configuration) {
 
 bool StreamMetadataResolver::InitializeStorage(string name, Variant &config,
 		Storage &result) {
+	DEBUG("name=%s",STR(name));
 	if (!config.HasKeyChain(V_STRING, false, 1, CONF_APPLICATION_MEDIAFOLDER)) {
 		WARN("mediaFolder has incorrect type");
 		return false;
@@ -143,6 +144,9 @@ bool StreamMetadataResolver::InitializeStorage(string name, Variant &config,
 		WARN("mediaFolder not found: %s", STR(tempString));
 		return false;
 	}
+
+	DEBUG("mediaFolder=%s,tempString=%s",STR(mediaFolder),STR(tempString));
+	
 	if (mediaFolder[mediaFolder.size() - 1] != PATH_SEPARATOR)
 		mediaFolder += PATH_SEPARATOR;
 	if (MAP_HAS1(_storagesByMediaFolder, mediaFolder)) {
@@ -172,6 +176,9 @@ bool StreamMetadataResolver::InitializeStorage(string name, Variant &config,
 	}
 	if (metaFolder[metaFolder.size() - 1] != PATH_SEPARATOR)
 		metaFolder += PATH_SEPARATOR;
+
+	DEBUG("metaFolder=%s",STR(metaFolder));
+
 
 	//enableStats
 	bool enableStats = false;

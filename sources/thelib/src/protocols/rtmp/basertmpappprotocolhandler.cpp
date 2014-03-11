@@ -778,7 +778,8 @@ bool BaseRTMPAppProtocolHandler::ProcessInvokeConnect(BaseRTMPProtocol *pFrom,
 	}
 
 	//1. Send the channel specific messages
-	Variant response = GenericMessageFactory::GetWinAckSize(2500000);
+	Variant response ;
+	response = GenericMessageFactory::GetWinAckSize(2500000);
 	if (!SendRTMPMessage(pFrom, response)) {
 		FATAL("Unable to send message to client");
 		return false;
@@ -798,6 +799,7 @@ bool BaseRTMPAppProtocolHandler::ProcessInvokeConnect(BaseRTMPProtocol *pFrom,
 
 	//3. Send the connect result
 	response = ConnectionMessageFactory::GetInvokeConnectResult(request);
+	DEBUG("-------------4-------- response:\n%s", STR(response.ToString()));
 	if (!SendRTMPMessage(pFrom, response)) {
 		FATAL("Unable to send message to client");
 		return false;

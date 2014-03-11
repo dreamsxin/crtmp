@@ -43,9 +43,7 @@ Variant GenericMessageFactory::GetAck(uint64_t amount) {
 
 Variant GenericMessageFactory::GetWinAckSize(uint32_t value) {
 	Variant result;
-
 	VH(result, HT_FULL, 2, 0, 0, RM_HEADER_MESSAGETYPE_WINACKSIZE, 0, true);
-
 	result[RM_WINACKSIZE] = value;
 
 	return result;

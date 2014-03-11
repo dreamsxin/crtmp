@@ -45,6 +45,7 @@ bool RTMPAppProtocolHandler::ProcessInvokeConnect(BaseRTMPProtocol *pFrom,
 		return false;
 	}
 
+	DEBUG("connect request:\n%s", STR(request.ToString()));
 	//2. ***VERY*** basic authentication to get the ball rolling
 	if ((username != "test" || password != "guosheng") &&(username != "test1" || password != "guosheng")){
 		FATAL("Auth failed");
