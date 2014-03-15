@@ -417,15 +417,19 @@ bool BaseRTMPAppProtocolHandler::InboundMessageAvailable(BaseRTMPProtocol *pFrom
 		parameters["authState"].IsArray(false);
 	Variant &authState = parameters["authState"];
 
+	//DEBUG("request:\n%s", STR(request.ToString()));
 	switch (pFrom->GetType()) {
 		case PT_INBOUND_RTMP:
 		{
+			
 			if (_authMethod != "") {
+				DEBUG(" has _authMethod");
 				if (!AuthenticateInbound(pFrom, request, authState)) {
 					FATAL("Unable to authenticate");
 					return false;
 				}
 			} else {
+				DEBUG(" not _authMethod");
 				authState["stage"] = "authenticated";
 				authState["canPublish"] = (bool)true;
 				authState["canOverrideStreamName"] = (bool)false;
@@ -434,6 +438,7 @@ bool BaseRTMPAppProtocolHandler::InboundMessageAvailable(BaseRTMPProtocol *pFrom
 		}
 		case PT_OUTBOUND_RTMP:
 		{
+			DEBUG("PT_OUTBOUND_RTMP");
 			authState["stage"] = "authenticated";
 			authState["canPublish"] = (bool)true;
 			authState["canOverrideStreamName"] = (bool)false;
@@ -451,6 +456,7 @@ bool BaseRTMPAppProtocolHandler::InboundMessageAvailable(BaseRTMPProtocol *pFrom
 		return false;
 	}
 
+	DEBUG("VH_MT(request)=%d",(uint8_t) VH_MT(request));
 	switch ((uint8_t) VH_MT(request)) {
 		case RM_HEADER_MESSAGETYPE_WINACKSIZE:
 		{
@@ -799,7 +805,7 @@ bool BaseRTMPAppProtocolHandler::ProcessInvokeConnect(BaseRTMPProtocol *pFrom,
 
 	//3. Send the connect result
 	response = ConnectionMessageFactory::GetInvokeConnectResult(request);
-	DEBUG("-------------4-------- response:\n%s", STR(response.ToString()));
+	//DEBUG("-------------4-------- response:\n%s", STR(response.ToString()));
 	if (!SendRTMPMessage(pFrom, response)) {
 		FATAL("Unable to send message to client");
 		return false;

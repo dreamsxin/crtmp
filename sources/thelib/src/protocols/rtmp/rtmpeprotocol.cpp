@@ -71,7 +71,6 @@ bool RTMPEProtocol::SignalInputData(IOBuffer &buffer) {
 }
 
 bool RTMPEProtocol::EnqueueForOutbound() {
-
 	IOBuffer *pOutputBuffer = _pNearProtocol->GetOutputBuffer();
 
 	if (pOutputBuffer == NULL)

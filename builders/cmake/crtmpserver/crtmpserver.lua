@@ -179,22 +179,22 @@ configuration=
 					--default values. The only mandatory property is
 					--mediaFolder
 					description="Some storage",
-					mediaFolder="/tmp/Storage/media/",
-					metaFolder="/tmp/Storage",
+					mediaFolder="/home/yili/workspace/yili",
+					metaFolder="/home/yili/workspace/yili",
 					enableStats=true,
 					clientSideBuffer=15,
 					keyframeSeek=false,
 					seekGranularity=0.1,
 				},
 				namedStorage2={
-					mediaFolder="/tmp/Storage/media/mp4",
-					metaFolder="/tmp/Storage",
+					mediaFolder="/home/yili/workspace/yili",
+					metaFolder="/home/yili/workspace/yili",
 					seekGranularity=0.2,
 					enableStats=true,
 				},
 				namedStorage3={
-					mediaFolder="/tmp/Storage/media/flv",
-					metaFolder="/tmp/Storage",
+					mediaFolder="/home/yili/workspace/yili",
+					metaFolder="/home/yili/workspace/yili",
 				},
 				{
 					--this one doesn't have a name

@@ -392,6 +392,7 @@ bool BaseRTMPProtocol::SendMessage(Variant & message) {
 			GETAVAILABLEBYTESCOUNT(_intermediateBuffer));
 #else  /* ENFORCE_RTMP_OUTPUT_CHECKS */
 	//2. Send the message
+	DEBUG("--NOT--ENFORCE_RTMP_OUTPUT_CHECKS----");
 	if (!_rtmpProtocolSerializer.Serialize(_channels[(uint32_t) VH_CI(message)],
 			message, _outputBuffer, _outboundChunkSize)) {
 		FATAL("Unable to serialize RTMP message");

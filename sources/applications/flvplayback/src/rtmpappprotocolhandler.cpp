@@ -119,8 +119,6 @@ bool RTMPAppProtocolHandler::ProcessGetDemondFlvs(BaseRTMPProtocol *pFrom, Varia
 	Variant message = GenericMessageFactory::GetInvoke(3, 0, 0, false, 0,
 			callbackName, parameters);
 
-	//GenericMessageFactory::GetNotify(channelId, streamId, timeStamp,	isAbsolute, "onPlayStatus", parameters)
-
 	return SendRTMPMessage(pFrom, message);
 }
 
