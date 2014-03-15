@@ -71,7 +71,10 @@ bool RTMPAppProtocolHandler::ProcessInvokeGeneric(BaseRTMPProtocol *pFrom,
 		return ProcessGetAvailableFlvs(pFrom, request);
 	} else if (functionName == "insertMetadata") {
 		return ProcessInsertMetadata(pFrom, request);
-	} else {
+	}else if(functionName == "getDemondFlvs"){
+		return ProcessGetDemondFlvs(pFrom, request);
+	} 
+	else {
 		return BaseRTMPAppProtocolHandler::ProcessInvokeGeneric(pFrom, request);
 	}
 }
@@ -80,7 +83,7 @@ bool RTMPAppProtocolHandler::ProcessGetAvailableFlvs(BaseRTMPProtocol *pFrom, Va
 	Variant parameters;
 	parameters.PushToArray(Variant());
 	parameters.PushToArray(Variant());
-	
+
 	map<uint32_t, BaseStream *> allInboundStreams =
 			GetApplication()->GetStreamsManager()->FindByType(ST_IN_NET, true);
 
@@ -92,13 +95,33 @@ bool RTMPAppProtocolHandler::ProcessGetAvailableFlvs(BaseRTMPProtocol *pFrom, Va
 	Variant message = GenericMessageFactory::GetInvoke(3, 0, 0, false, 0,
 			"SetAvailableFlvs", parameters);
 
-	//GenericMessageFactory::GetNotify(channelId, streamId, timeStamp,	isAbsolute, "onPlayStatus", parameters)
-
 	return SendRTMPMessage(pFrom, message);
 }
 
 bool RTMPAppProtocolHandler::ProcessInsertMetadata(BaseRTMPProtocol *pFrom, Variant &request) {
 	NYIR;
+}
+
+
+bool RTMPAppProtocolHandler::ProcessGetDemondFlvs(BaseRTMPProtocol *pFrom, Variant &request) {
+	Variant parameters;
+	parameters.PushToArray(Variant());
+	parameters.PushToArray(Variant());
+
+	DEBUG("request:\n%s", STR(request.ToString()));
+	
+	string callbackName = M_INVOKE_PARAM(request,1);
+	DEBUG("callbackName =%s", STR(callbackName));
+	
+	parameters[(uint32_t) 0]["level"] = "fns";
+	DEBUG("parameters:\n%s", STR(parameters.ToString()));
+
+	Variant message = GenericMessageFactory::GetInvoke(3, 0, 0, false, 0,
+			callbackName, parameters);
+
+	//GenericMessageFactory::GetNotify(channelId, streamId, timeStamp,	isAbsolute, "onPlayStatus", parameters)
+
+	return SendRTMPMessage(pFrom, message);
 }
 
 #endif /* HAS_PROTOCOL_RTMP */

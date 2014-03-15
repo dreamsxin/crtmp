@@ -37,6 +37,7 @@ namespace app_flvplayback {
 	private:
 		bool ProcessGetAvailableFlvs(BaseRTMPProtocol *pFrom, Variant &request);
 		bool ProcessInsertMetadata(BaseRTMPProtocol *pFrom, Variant &request);
+		bool ProcessGetDemondFlvs(BaseRTMPProtocol *pFrom, Variant &request) ;
 	};
 }
 #endif	/* _RTMPAPPPROTOCOLHANDLER_H */
