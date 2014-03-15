@@ -47,9 +47,15 @@ bool RTMPAppProtocolHandler::ProcessInvokeConnect(BaseRTMPProtocol *pFrom,
 
 	DEBUG("connect request:\n%s", STR(request.ToString()));
 	//2. ***VERY*** basic authentication to get the ball rolling
-	if ((username != "test" || password != "guosheng") &&(username != "test1" || password != "guosheng")){
+	if ((username != "test" || password != "guosheng") &&(username != "yili" || password != "guosheng")){
 		FATAL("Auth failed");
-		return false;
+
+		Variant response = ConnectionMessageFactory::GetInvokeConnectError(request,"Username or Password Error !");
+			if (!pFrom->SendMessage(response)) {
+				FATAL("Unable to send message");			
+			}
+			pFrom->GracefullyEnqueueForDelete();
+			return true;
 	}
 
 	//3. Auth passes
@@ -74,7 +80,7 @@ bool RTMPAppProtocolHandler::ProcessGetAvailableFlvs(BaseRTMPProtocol *pFrom, Va
 	Variant parameters;
 	parameters.PushToArray(Variant());
 	parameters.PushToArray(Variant());
-
+	
 	map<uint32_t, BaseStream *> allInboundStreams =
 			GetApplication()->GetStreamsManager()->FindByType(ST_IN_NET, true);
 
@@ -82,8 +88,11 @@ bool RTMPAppProtocolHandler::ProcessGetAvailableFlvs(BaseRTMPProtocol *pFrom, Va
 		parameters[(uint32_t) 1].PushToArray(MAP_VAL(i)->GetName());
 	}
 
+	DEBUG("parameters:\n%s", STR(parameters.ToString()));
 	Variant message = GenericMessageFactory::GetInvoke(3, 0, 0, false, 0,
 			"SetAvailableFlvs", parameters);
+
+	//GenericMessageFactory::GetNotify(channelId, streamId, timeStamp,	isAbsolute, "onPlayStatus", parameters)
 
 	return SendRTMPMessage(pFrom, message);
 }
@@ -91,5 +100,6 @@ bool RTMPAppProtocolHandler::ProcessGetAvailableFlvs(BaseRTMPProtocol *pFrom, Va
 bool RTMPAppProtocolHandler::ProcessInsertMetadata(BaseRTMPProtocol *pFrom, Variant &request) {
 	NYIR;
 }
+
 #endif /* HAS_PROTOCOL_RTMP */
 
