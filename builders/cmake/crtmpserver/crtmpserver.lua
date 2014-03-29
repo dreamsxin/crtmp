@@ -31,7 +31,7 @@ configuration=
 			type="file",
 			level=6,
 			-- the file where the log messages are going to land
-			fileName="/home/yili/workspace/edurtmp/logs/crtmpserver",
+			fileName="/home/yili/workspace/edu-rtmp/logs/crtmpserver",
 			--newLineCharacters="\r\n",
 			fileHistorySize=10,
 			fileLength=1024*256,

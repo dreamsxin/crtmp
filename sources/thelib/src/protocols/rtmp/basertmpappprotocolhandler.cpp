@@ -417,19 +417,19 @@ bool BaseRTMPAppProtocolHandler::InboundMessageAvailable(BaseRTMPProtocol *pFrom
 		parameters["authState"].IsArray(false);
 	Variant &authState = parameters["authState"];
 
-	//DEBUG("request:\n%s", STR(request.ToString()));
+
 	switch (pFrom->GetType()) {
 		case PT_INBOUND_RTMP:
 		{
 			
 			if (_authMethod != "") {
-				DEBUG(" has _authMethod");
+			//	DEBUG(" has _authMethod");
 				if (!AuthenticateInbound(pFrom, request, authState)) {
 					FATAL("Unable to authenticate");
 					return false;
 				}
 			} else {
-				DEBUG(" not _authMethod");
+			//	DEBUG(" not _authMethod");
 				authState["stage"] = "authenticated";
 				authState["canPublish"] = (bool)true;
 				authState["canOverrideStreamName"] = (bool)false;
@@ -456,7 +456,7 @@ bool BaseRTMPAppProtocolHandler::InboundMessageAvailable(BaseRTMPProtocol *pFrom
 		return false;
 	}
 
-	DEBUG("VH_MT(request)=%d",(uint8_t) VH_MT(request));
+	DEBUG("-----message_type=%d,Protocol_id=%d,",(uint8_t) VH_MT(request),pFrom->GetId());
 	switch ((uint8_t) VH_MT(request)) {
 		case RM_HEADER_MESSAGETYPE_WINACKSIZE:
 		{
@@ -721,6 +721,7 @@ bool BaseRTMPAppProtocolHandler::ProcessInvoke(BaseRTMPProtocol *pFrom,
 		Variant &request) {
 	//PROD_ACCESS(CreateLogEventInvoke(pFrom, request));
 	string functionName = request[RM_INVOKE][RM_INVOKE_FUNCTION];
+	DEBUG("functionName=%s",STR(functionName));
 	uint32_t currentInvokeId = M_INVOKE_ID(request);
 	if (currentInvokeId != 0) {
 		if (_nextInvokeId[pFrom->GetId()] <= currentInvokeId) {
@@ -836,10 +837,12 @@ bool BaseRTMPAppProtocolHandler::ProcessInvokeCreateStream(BaseRTMPProtocol *pFr
 		FATAL("Unable to create stream");
 		return false;
 	}
-
+	DEBUG("CreateNeutralStream id=%d",id);
 	//2. Send the response
 	Variant response = StreamMessageFactory::GetInvokeCreateStreamResult(request, id);
-	return SendRTMPMessage(pFrom, response);
+	bool result=SendRTMPMessage(pFrom, response);
+	DEBUG("SendRTMPMessage result=%d",id,(int)result);
+	 return result;
 }
 
 bool BaseRTMPAppProtocolHandler::ProcessInvokePublish(BaseRTMPProtocol *pFrom,

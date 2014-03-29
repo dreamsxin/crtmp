@@ -69,6 +69,7 @@ BaseOutNetRTMPStream::BaseOutNetRTMPStream(BaseProtocol *pProtocol, uint64_t typ
 	_videoCurrentFrameDropped = false;
 	_attachedStreamType = 0;
 	_clientId = format("%d_%d_%"PRIz"u", _pProtocol->GetId(), _rtmpStreamId, (size_t)this);
+	DEBUG("--------------_clientId=%s",STR(_clientId));
 
 	_paused = false;
 

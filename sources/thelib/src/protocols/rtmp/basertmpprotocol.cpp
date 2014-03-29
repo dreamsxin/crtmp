@@ -138,6 +138,8 @@ bool BaseRTMPProtocol::CreateSO(string &name) {
 	return true;
 }
 
+
+
 void BaseRTMPProtocol::SignalBeginSOProcess(string &name) {
 
 }
@@ -392,7 +394,7 @@ bool BaseRTMPProtocol::SendMessage(Variant & message) {
 			GETAVAILABLEBYTESCOUNT(_intermediateBuffer));
 #else  /* ENFORCE_RTMP_OUTPUT_CHECKS */
 	//2. Send the message
-	DEBUG("--NOT--ENFORCE_RTMP_OUTPUT_CHECKS----");
+//	DEBUG("--NOT--ENFORCE_RTMP_OUTPUT_CHECKS----");
 	if (!_rtmpProtocolSerializer.Serialize(_channels[(uint32_t) VH_CI(message)],
 			message, _outputBuffer, _outboundChunkSize)) {
 		FATAL("Unable to serialize RTMP message");
@@ -495,6 +497,14 @@ BaseStream * BaseRTMPProtocol::GetRTMPStream(uint32_t rtmpStreamId) {
 	return _streams[rtmpStreamId];
 }
 
+void BaseRTMPProtocol::CloseAllStream() {
+	for (uint32_t i = 0; i < MAX_STREAMS_COUNT; i++) {
+		if (_streams[i] != NULL) {
+			CloseStream(i,true);
+		}
+	}
+}
+
 bool BaseRTMPProtocol::CloseStream(uint32_t streamId, bool createNeutralStream) {
 	//1. Validate request
 	if (streamId == 0 || streamId >= MAX_STREAMS_COUNT) {
@@ -576,6 +586,7 @@ RTMPStream * BaseRTMPProtocol::CreateNeutralStream(uint32_t & streamId) {
 		}
 	}
 
+	DEBUG("select streamId=%d",streamId);
 	RTMPStream *pStream = new RTMPStream(this, streamId);
 	if (!pStream->SetStreamsManager(GetApplication()->GetStreamsManager())) {
 		FATAL("Unable to set the streams manager");

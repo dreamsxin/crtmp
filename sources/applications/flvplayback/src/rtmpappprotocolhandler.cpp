@@ -25,6 +25,7 @@
 #include "application/baseclientapplication.h"
 #include "streaming/baseinnetstream.h"
 #include "streaming/streamstypes.h"
+#include "protocols/rtmp/streaming/innetrtmpstream.h"
 using namespace app_flvplayback;
 
 RTMPAppProtocolHandler::RTMPAppProtocolHandler(Variant &configuration)
@@ -47,7 +48,7 @@ bool RTMPAppProtocolHandler::ProcessInvokeConnect(BaseRTMPProtocol *pFrom,
 
 	DEBUG("connect request:\n%s", STR(request.ToString()));
 	//2. ***VERY*** basic authentication to get the ball rolling
-	if ((username != "test" || password != "guosheng") &&(username != "yili" || password != "guosheng")){
+	if ((username != "xiaoting" || password != "123456") &&(username != "yili" || password != "guosheng") && (username != "test" || password != "guosheng")){
 		FATAL("Auth failed");
 
 		Variant response = ConnectionMessageFactory::GetInvokeConnectError(request,"Username or Password Error !");
@@ -67,13 +68,18 @@ bool RTMPAppProtocolHandler::ProcessInvokeGeneric(BaseRTMPProtocol *pFrom,
 		Variant &request) {
 
 	string functionName = M_INVOKE_FUNCTION(request);
+	DEBUG("functionName =%s", STR(functionName));
 	if (functionName == "getAvailableFlvs") {
 		return ProcessGetAvailableFlvs(pFrom, request);
 	} else if (functionName == "insertMetadata") {
 		return ProcessInsertMetadata(pFrom, request);
 	}else if(functionName == "getDemondFlvs"){
 		return ProcessGetDemondFlvs(pFrom, request);
-	} 
+	} else if(functionName == "getMembers"){
+		return ProcessGetMembers(pFrom, request);
+	}else if(functionName == "test"){
+		return ProcessTest(pFrom, request);
+	}
 	else {
 		return BaseRTMPAppProtocolHandler::ProcessInvokeGeneric(pFrom, request);
 	}
@@ -90,8 +96,8 @@ bool RTMPAppProtocolHandler::ProcessGetAvailableFlvs(BaseRTMPProtocol *pFrom, Va
 	FOR_MAP(allInboundStreams, uint32_t, BaseStream *, i) {
 		parameters[(uint32_t) 1].PushToArray(MAP_VAL(i)->GetName());
 	}
-
-	DEBUG("parameters:\n%s", STR(parameters.ToString()));
+	DEBUG("parameters-:\n%s", STR(parameters.ToString()));
+	
 	Variant message = GenericMessageFactory::GetInvoke(3, 0, 0, false, 0,
 			"SetAvailableFlvs", parameters);
 
@@ -113,14 +119,70 @@ bool RTMPAppProtocolHandler::ProcessGetDemondFlvs(BaseRTMPProtocol *pFrom, Varia
 	string callbackName = M_INVOKE_PARAM(request,1);
 	DEBUG("callbackName =%s", STR(callbackName));
 	
-	parameters[(uint32_t) 0]["level"] = "fns";
+	parameters[1].PushToArray("你是我的眼");
+	parameters[1].PushToArray("如果的事.mp4");
+	parameters[1].PushToArray("我的眼泪.mp4");
+	parameters[1].PushToArray("张韶涵.mp4");
 	DEBUG("parameters:\n%s", STR(parameters.ToString()));
 
 	Variant message = GenericMessageFactory::GetInvoke(3, 0, 0, false, 0,
-			callbackName, parameters);
+			"SetDemondFlvs", parameters);
 
 	return SendRTMPMessage(pFrom, message);
 }
 
+
+bool RTMPAppProtocolHandler::ProcessGetMembers(BaseRTMPProtocol *pFrom, Variant &request) {
+	Variant parameters;
+	parameters.PushToArray(Variant());
+	parameters.PushToArray(Variant());
+
+	DEBUG("request:\n%s", STR(request.ToString()));
+	
+//	string callbackName = M_INVOKE_PARAM(request,1);
+//	DEBUG("callbackName =%s", STR(callbackName));
+	
+	parameters[1].PushToArray("肖婷");
+	parameters[1].PushToArray("张磊");
+	parameters[1].PushToArray("朱工");
+	parameters[1].PushToArray("周一");
+	parameters[1].PushToArray("周发");
+	parameters[1].PushToArray("张三");
+	parameters[1].PushToArray("李四");
+	parameters[1].PushToArray("王二");
+	parameters[1].PushToArray("马志");
+	DEBUG("parameters:\n%s", STR(parameters.ToString()));
+
+	Variant message = GenericMessageFactory::GetInvoke(3, 0, 0, false, 0,
+			"SetMembers", parameters);
+
+	return SendRTMPMessage(pFrom, message);
+}
+
+bool RTMPAppProtocolHandler::ProcessTest(BaseRTMPProtocol *pFrom, Variant &request) {
+	Variant parameters;
+	parameters.PushToArray(Variant());
+	parameters.PushToArray(Variant());
+
+	DEBUG("request:\n%s", STR(request.ToString()));
+	
+	uint32_t protocolId = (uint32_t)M_INVOKE_PARAM(request,1);
+	DEBUG("protocolId =%d", protocolId);
+	
+	if (MAP_HAS1(_connections, protocolId)){
+		FOR_MAP(_connections, uint32_t, BaseRTMPProtocol *, i) 
+		{
+			BaseRTMPProtocol *pProtocol =	MAP_VAL(i);
+			if ((pProtocol->GetApplication() != NULL) && (pProtocol ->GetId() ==protocolId)) {
+				DEBUG("find  pProtocol");
+				pProtocol->CloseAllStream();				
+				break;
+			}
+		}
+		return true;
+	}
+	DEBUG("_connections no  protocolId");
+	return true;
+}
 #endif /* HAS_PROTOCOL_RTMP */
 
