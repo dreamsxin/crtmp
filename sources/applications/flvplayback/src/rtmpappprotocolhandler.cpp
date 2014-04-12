@@ -47,8 +47,10 @@ bool RTMPAppProtocolHandler::ProcessInvokeConnect(BaseRTMPProtocol *pFrom,
 	}
 
 	DEBUG("connect request:\n%s", STR(request.ToString()));
+	pFrom->clientname=format("%s",STR(username));
+	DEBUG("clientname:%s", STR(pFrom->clientname));
 	//2. ***VERY*** basic authentication to get the ball rolling
-	if ((username != "xiaoting" || password != "123456") &&(username != "yili" || password != "guosheng") && (username != "test" || password != "guosheng")){
+/*	if ((username != "xiaoting" || password != "123456") &&(username != "yili" || password != "guosheng") && (username != "test" || password != "guosheng")){
 		FATAL("Auth failed");
 
 		Variant response = ConnectionMessageFactory::GetInvokeConnectError(request,"Username or Password Error !");
@@ -56,8 +58,8 @@ bool RTMPAppProtocolHandler::ProcessInvokeConnect(BaseRTMPProtocol *pFrom,
 				FATAL("Unable to send message");			
 			}
 			pFrom->GracefullyEnqueueForDelete();
-			return true;
-	}
+			return false;
+	}*/
 
 	//3. Auth passes
 	return BaseRTMPAppProtocolHandler::ProcessInvokeConnect(pFrom, request);
@@ -77,6 +79,8 @@ bool RTMPAppProtocolHandler::ProcessInvokeGeneric(BaseRTMPProtocol *pFrom,
 		return ProcessGetDemondFlvs(pFrom, request);
 	} else if(functionName == "getMembers"){
 		return ProcessGetMembers(pFrom, request);
+	}else if(functionName == "shotout"){
+		return ProcessShotout(pFrom, request);
 	}else if(functionName == "test"){
 		return ProcessTest(pFrom, request);
 	}
@@ -157,6 +161,36 @@ bool RTMPAppProtocolHandler::ProcessGetMembers(BaseRTMPProtocol *pFrom, Variant 
 			"SetMembers", parameters);
 
 	return SendRTMPMessage(pFrom, message);
+}
+
+bool RTMPAppProtocolHandler::ProcessShotout(BaseRTMPProtocol *pFrom, Variant &request) {
+	Variant parameters;
+	parameters.PushToArray(Variant());
+	parameters.PushToArray(Variant());
+
+	DEBUG("request:\n%s", STR(request.ToString()));
+	
+//	uint32_t protocolId = (uint32_t)M_INVOKE_PARAM(request,1);
+//	DEBUG("protocolId =%d", protocolId);
+	string clientname = M_INVOKE_PARAM(request,1);
+
+	
+//	if (MAP_HAS1(_connections, protocolId))
+		{
+		FOR_MAP(_connections, uint32_t, BaseRTMPProtocol *, i) 
+		{
+			BaseRTMPProtocol *pProtocol =	MAP_VAL(i);
+			if ((pProtocol->GetApplication() != NULL) && (strcmp(pProtocol ->clientname.c_str(),clientname.c_str())==0)) {
+				DEBUG("find  pProtocol");
+			//	pProtocol->CloseAllStream();	
+				pProtocol->GracefullyEnqueueForDelete();
+				break;
+			}
+		}
+		return true;
+	}
+	DEBUG("_connections no  protocolId");
+	return true;
 }
 
 bool RTMPAppProtocolHandler::ProcessTest(BaseRTMPProtocol *pFrom, Variant &request) {

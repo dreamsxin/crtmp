@@ -87,6 +87,10 @@ BaseRTMPProtocol::BaseRTMPProtocol(uint64_t protocolType)
 }
 
 BaseRTMPProtocol::~BaseRTMPProtocol() {
+//add by zhengyili-------begun------------	
+//  	free clientname;
+//add by zhengyili------end----------------
+
 	for (uint32_t i = 0; i < MAX_STREAMS_COUNT; i++) {
 		if (_streams[i] != NULL) {
 			delete _streams[i];

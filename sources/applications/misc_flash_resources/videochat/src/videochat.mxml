@@ -33,7 +33,7 @@
 					_connectingString=null;
 				}
 				if((_streamName==null)||(_streamName=="")){
-					_streamName="mp4:lg.mp4";
+					_streamName="mytears.mp4";
 				}
 				_lastX=0;
 				_lastY=0;
@@ -61,12 +61,12 @@
 				_connectData=new Object();
 				_connectData.client=this;
 				_connectData.done=function ():void{
-					this.client.Connect(this.completeUri,this.username,this.password);
+					this.client.Connect(this.completeUri,"yili","guosheng");
 				};
 				if(_connectingString!=null){
 					_engine.Connect(_connectingString,"","");
 				}else{
-					ConnectWindow.ShowSimple(this,"rtmp","127.0.0.1","live",_connectData);
+					ConnectWindow.ShowSimple(this,"rtmp","192.168.1.126","live",_connectData);
 				}
 			}
 			
@@ -75,6 +75,7 @@
 			}
 			
 			private function IsConnectedEvent(evt:Event):void{
+				trace("---------event.toString="+evt.toString());
 				_guestsList=SharedObject.getRemote("guestsList",_engine.FlashConnection.uri);
 				_guestsList.addEventListener(SyncEvent.SYNC,GuestsSOSync);
 				_guestsList.connect(_engine.FlashConnection);

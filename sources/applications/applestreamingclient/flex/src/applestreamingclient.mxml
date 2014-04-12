@@ -11,8 +11,7 @@
 			
 			import mx.controls.Alert;
 			import mx.utils.ObjectUtil;
-			
-			import org.osmf.net.dynamicstreaming.SufficientBandwidthRule;
+		
 			
 			private var _connectData:Object;
 			[Bindable]

@@ -77,8 +77,10 @@ bool SOManager::ProcessFlexSharedObject(BaseRTMPProtocol *pFrom, Variant &reques
 bool SOManager::ProcessSharedObject(BaseRTMPProtocol *pFrom, Variant &request) {
 	//1. Get the name and the persistance property
 	string name = M_SO_NAME(request);
-	if (pFrom->GetType() == PT_OUTBOUND_RTMP)
+	DEBUG("name=%s",STR(name ));
+	if (pFrom->GetType() == PT_OUTBOUND_RTMP){
 		pFrom->SignalBeginSOProcess(name);
+	}
 
 	SO *pSO = NULL;
 	if (MAP_HAS1(_sos, name))
@@ -113,7 +115,7 @@ bool SOManager::ProcessSharedObject(BaseRTMPProtocol *pFrom, Variant &request) {
 bool SOManager::ProcessSharedObjectPrimitive(BaseRTMPProtocol *pFrom, SO *pSO,
 		string name, Variant &request, uint32_t primitiveId) {
 	Variant primitive = M_SO_PRIMITIVE(request, primitiveId);
-
+	DEBUG("TYPE=%d",(uint8_t) primitive[RM_SHAREDOBJECTPRIMITIVE_TYPE]);
 	switch ((uint8_t) primitive[RM_SHAREDOBJECTPRIMITIVE_TYPE]) {
 		case SOT_CS_CONNECT:
 		{

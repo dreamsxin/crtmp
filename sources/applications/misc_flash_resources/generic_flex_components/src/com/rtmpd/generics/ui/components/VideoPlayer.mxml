@@ -65,6 +65,7 @@
 			public function set Camera(camera:Camera):void{
 				_video.attachCamera(camera);
 			}
+
 		]]>
 	</mx:Script>
 </mx:Canvas>

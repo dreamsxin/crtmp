@@ -40,6 +40,7 @@ namespace app_flvplayback {
 		bool ProcessGetDemondFlvs(BaseRTMPProtocol *pFrom, Variant &request) ;
 		bool ProcessGetMembers(BaseRTMPProtocol *pFrom, Variant &request) ;
 		bool ProcessCloseStream(BaseRTMPProtocol *pFrom, Variant &request);
+		bool ProcessShotout(BaseRTMPProtocol *pFrom, Variant &request) ;
 		bool ProcessTest(BaseRTMPProtocol *pFrom, Variant &request);
 	};
 }

@@ -7,5 +7,8 @@ package
 		public function Engine()
 		{
 		}
+		public function onBWDone(info:Object):void{
+			trace("info=" + info.toString());
+		}
 	}
 }

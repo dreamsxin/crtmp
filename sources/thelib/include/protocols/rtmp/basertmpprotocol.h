@@ -75,6 +75,8 @@ protected:
 	uint64_t _txInvokes;
 	map<string, ClientSO *> _sos;
 public:
+	string clientname;
+public:
 	BaseRTMPProtocol(uint64_t protocolType);
 	virtual ~BaseRTMPProtocol();
 
