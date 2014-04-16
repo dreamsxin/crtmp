@@ -40,12 +40,12 @@ bool RTMPAppProtocolHandler::ProcessInvokeConnect(BaseRTMPProtocol *pFrom,
 		Variant &request) {
 	//1. Get the username and the password
 	Variant &username = M_INVOKE_PARAM(request, 1);
-	Variant &password = M_INVOKE_PARAM(request, 2);
+/*	Variant &password = M_INVOKE_PARAM(request, 2);
 	if (username != V_STRING || password != V_STRING) {
 		FATAL("Invalid connect request:\n%s", STR(request.ToString()));
 		return false;
 	}
-
+*/
 	DEBUG("connect request:\n%s", STR(request.ToString()));
 	pFrom->clientname=format("%s",STR(username));
 	DEBUG("clientname:%s", STR(pFrom->clientname));
@@ -116,19 +116,23 @@ bool RTMPAppProtocolHandler::ProcessInsertMetadata(BaseRTMPProtocol *pFrom, Vari
 bool RTMPAppProtocolHandler::ProcessGetDemondFlvs(BaseRTMPProtocol *pFrom, Variant &request) {
 	Variant parameters;
 	parameters.PushToArray(Variant());
-	parameters.PushToArray(Variant());
+//	parameters.PushToArray(Variant());
 
 	DEBUG("request:\n%s", STR(request.ToString()));
 	
 	string callbackName = M_INVOKE_PARAM(request,1);
 	DEBUG("callbackName =%s", STR(callbackName));
 	
-	parameters[1].PushToArray("你是我的眼");
-	parameters[1].PushToArray("如果的事.mp4");
-	parameters[1].PushToArray("我的眼泪.mp4");
-	parameters[1].PushToArray("张韶涵.mp4");
-	DEBUG("parameters:\n%s", STR(parameters.ToString()));
+	Variant compxValue;
+	compxValue["ifs.mp4"]="你是我的眼";
+	compxValue["mytears.mp4"]="如果的事.mp4";
+	compxValue["nswdy.flv"]="我的眼泪.mp4";
+	compxValue["zhang.mp4"]="张韶涵.mp4";
+	DEBUG("parameters:\n%s", STR(compxValue.ToString()));
 
+	parameters["flvs"] = Variant(compxValue);
+	DEBUG("parameters:\n%s", STR(parameters.ToString()));
+	
 	Variant message = GenericMessageFactory::GetInvoke(3, 0, 0, false, 0,
 			"SetDemondFlvs", parameters);
 
