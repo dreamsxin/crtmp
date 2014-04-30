@@ -19,6 +19,7 @@
 
 
 #ifdef HAS_PROTOCOL_RTMP
+#include <iostream>
 #include "rtmpappprotocolhandler.h"
 #include "protocols/rtmp/basertmpprotocol.h"
 #include "protocols/rtmp/messagefactories/messagefactories.h"
@@ -26,6 +27,8 @@
 #include "streaming/baseinnetstream.h"
 #include "streaming/streamstypes.h"
 #include "protocols/rtmp/streaming/innetrtmpstream.h"
+#include "protocols/rtmp/sharedobjects/so.h"
+
 using namespace app_flvplayback;
 
 RTMPAppProtocolHandler::RTMPAppProtocolHandler(Variant &configuration)
@@ -39,16 +42,28 @@ RTMPAppProtocolHandler::~RTMPAppProtocolHandler() {
 bool RTMPAppProtocolHandler::ProcessInvokeConnect(BaseRTMPProtocol *pFrom,
 		Variant &request) {
 	//1. Get the username and the password
-	Variant &username = M_INVOKE_PARAM(request, 1);
+
+	DEBUG("connect request:\n%s", STR(request.ToString()));
+	
+	Variant username = M_INVOKE_PARAM(request, 1);
 /*	Variant &password = M_INVOKE_PARAM(request, 2);
 	if (username != V_STRING || password != V_STRING) {
 		FATAL("Invalid connect request:\n%s", STR(request.ToString()));
 		return false;
 	}
 */
-	DEBUG("connect request:\n%s", STR(request.ToString()));
+	
+	if ((username == V_NULL) || (username == V_UNDEFINED) || username == "" ) {
+		FATAL("Auth failed");
+		//WARN("no Name!");
+		//pFrom->clientname="unknow";
+		//return BaseRTMPAppProtocolHandler::ProcessInvokeConnect(pFrom, request);
+			return false;
+	}
+
 	pFrom->clientname=format("%s",STR(username));
 	DEBUG("clientname:%s", STR(pFrom->clientname));
+	
 	//2. ***VERY*** basic authentication to get the ball rolling
 /*	if ((username != "xiaoting" || password != "123456") &&(username != "yili" || password != "guosheng") && (username != "test" || password != "guosheng")){
 		FATAL("Auth failed");
@@ -187,8 +202,15 @@ bool RTMPAppProtocolHandler::ProcessShotout(BaseRTMPProtocol *pFrom, Variant &re
 			if ((pProtocol->GetApplication() != NULL) && (strcmp(pProtocol ->clientname.c_str(),clientname.c_str())==0)) {
 				DEBUG("find  pProtocol");
 			//	pProtocol->CloseAllStream();	
-				pProtocol->GracefullyEnqueueForDelete();
-				break;
+
+			Variant panull;
+			panull.PushToArray(Variant());
+			panull.PushToArray("dafdsfasdfds");
+			Variant message = GenericMessageFactory::GetInvoke(3, 0, 0, false, 0,"ServerShotout",panull);
+			SendRTMPMessage(pProtocol, message);
+			
+			pProtocol->GracefullyEnqueueForDelete();
+			break;
 			}
 		}
 		return true;
@@ -202,9 +224,10 @@ bool RTMPAppProtocolHandler::ProcessTest(BaseRTMPProtocol *pFrom, Variant &reque
 	parameters.PushToArray(Variant());
 	parameters.PushToArray(Variant());
 
+	DEBUG("pFrom:%ld", (long)pFrom);
 	DEBUG("request:\n%s", STR(request.ToString()));
 	
-	uint32_t protocolId = (uint32_t)M_INVOKE_PARAM(request,1);
+/*	uint32_t protocolId = (uint32_t)M_INVOKE_PARAM(request,1);
 	DEBUG("protocolId =%d", protocolId);
 	
 	if (MAP_HAS1(_connections, protocolId)){
@@ -218,9 +241,35 @@ bool RTMPAppProtocolHandler::ProcessTest(BaseRTMPProtocol *pFrom, Variant &reque
 			}
 		}
 		return true;
+	}*/
+
+	Variant compxValue;
+	compxValue["x"]=45;
+	compxValue["y"]=36;
+	string soname="boxData";
+	string propName="boxXY";
+//	pFrom->ClientSOSetProperty(soname,propName,compxValue);
+
+	SOManager * soM=GetSOManager();
+	if(soM->ContainsSO(soname)==false)
+	{
+		WARN("don't have boxData");
+		return false;
 	}
-	DEBUG("_connections no  protocolId");
-	return true;
+
+	SO *so=soM->GetSO("boxData", true);
+	DEBUG("SO.boxData=%s",STR(so->DumpTrack()));
+	
+	Variant message = SOMessageFactory::GetSharedObject(3, 0, 0, false, soname,
+			1, false);
+	SOMessageFactory::AddSOPrimitiveSend(message, parameters);
+	DEBUG("1111111");
+	SOMessageFactory::AddSOPrimitiveSetProperty(message,propName, compxValue);
+	DEBUG("222222");
+	so->SendMessage(message);
+	DEBUG("333333");
+	return pFrom->SendMessage(message);
+	
 }
 #endif /* HAS_PROTOCOL_RTMP */
 

@@ -179,6 +179,20 @@ bool BaseRTMPProtocol::ClientSOSend(string &name, Variant &parameters) {
 bool BaseRTMPProtocol::ClientSOSetProperty(string &soName, string &propName,
 		Variant &propValue) {
 	ClientSO *pSO = NULL;
+	DEBUG("---------------------");
+	FOR_MAP(_sos, string, ClientSO *, i) {
+		DEBUG("_sos 111");
+		string key= MAP_KEY(i);
+	//	ClientSO * tmpso= MAP_VAL(i);
+		DEBUG("key=%s",STR(key));
+	}
+	
+	/*	map<string, Variant>::iterator ite;
+		for ( ite = _sos.begin( ); ite != _sos.end( ); ite++ ) {
+			std::cout << "" << ite->first << ", value: " << ite->second.ToString() << std::endl;
+		}
+		std::cout << "HasKey end " << std::endl;*/
+	
 	if (!MAP_HAS1(_sos, soName)) {
 		FATAL("Client SO %s not found", STR(soName));
 		return false;
@@ -212,12 +226,14 @@ bool BaseRTMPProtocol::HandleSOPrimitive(string &name, Variant &primitive) {
 		return false;
 	}
 	pSO = _sos[name];
+	DEBUG("primitive=%s", STR(primitive.ToString()));
 	switch ((uint8_t) primitive[RM_SHAREDOBJECTPRIMITIVE_TYPE]) {
 		case SOT_CS_UPDATE_FIELD:
 		case SOT_SC_INITIAL_DATA:
 		{
 
 			FOR_MAP(primitive[RM_SHAREDOBJECTPRIMITIVE_PAYLOAD], string, Variant, i) {
+				DEBUG("key=%s,value=%s",STR(MAP_KEY(i)),STR(MAP_VAL(i)));
 				pSO->properties()[MAP_KEY(i)] = MAP_VAL(i);
 				pSO->changedProperties().PushToArray(MAP_KEY(i));
 			}

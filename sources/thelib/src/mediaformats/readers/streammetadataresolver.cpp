@@ -120,7 +120,7 @@ bool StreamMetadataResolver::Initialize(Variant &configuration) {
 			}
 		}
 	}
-
+	DEBUG("_recordedStreamsStorage=%s",STR(_recordedStreamsStorage));
 	if (hasTimers) {
 		StreamMetadataResolverTimer *pTimer = new StreamMetadataResolverTimer(this);
 		_statsTimerId = pTimer->GetId();

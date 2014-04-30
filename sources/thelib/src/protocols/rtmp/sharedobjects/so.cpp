@@ -149,12 +149,14 @@ void SO::Track() {
 			uint8_t type = VECTOR_VAL(j).type;
 			Variant primitive;
 			primitive[RM_SHAREDOBJECTPRIMITIVE_TYPE] = type;
+			DEBUG("Track:type=%d",type);
 			switch (type) {
 				case SOT_SC_DELETE_FIELD:
 				case SOT_CS_UPDATE_FIELD_ACK:
 					primitive[RM_SHAREDOBJECTPRIMITIVE_PAYLOAD][(uint32_t) 0] = key;
 					break;
 				case SOT_CS_UPDATE_FIELD:
+			//		DEBUG("SOT_CS_UPDATE_FIELD £¬value=%s",STR(_payload[key]));
 					primitive[RM_SHAREDOBJECTPRIMITIVE_PAYLOAD][key] = _payload[key];
 					break;
 				case SOT_SC_INITIAL_DATA:
@@ -174,6 +176,7 @@ void SO::Track() {
 
 
 		if (pTo != NULL) {
+			//DEBUG("so-SendMessage=%s",STR(message.ToString()));
 			if (!pTo->SendMessage(message)) {
 				pTo->EnqueueForDelete();
 			}

@@ -787,13 +787,13 @@ bool BaseRTMPAppProtocolHandler::ProcessInvokeConnect(BaseRTMPProtocol *pFrom,
 	//1. Send the channel specific messages
 	Variant response ;
 	response = GenericMessageFactory::GetWinAckSize(2500000);
-	DEBUG("------------GetWinAckSize-------- response:\n%s", STR(response.ToString()));
+//	DEBUG("------------GetWinAckSize-------- response:\n%s", STR(response.ToString()));
 	if (!SendRTMPMessage(pFrom, response)) {
 		FATAL("Unable to send message to client");
 		return false;
 	}
 	response = GenericMessageFactory::GetPeerBW(2500000, RM_PEERBW_TYPE_DYNAMIC);
-	DEBUG("------------GetPeerBW-------- response:\n%s", STR(response.ToString()));
+//	DEBUG("------------GetPeerBW-------- response:\n%s", STR(response.ToString()));
 	if (!SendRTMPMessage(pFrom, response)) {
 		FATAL("Unable to send message to client");
 		return false;
@@ -801,7 +801,7 @@ bool BaseRTMPAppProtocolHandler::ProcessInvokeConnect(BaseRTMPProtocol *pFrom,
 
 	//2. Initialize stream 0
 	response = StreamMessageFactory::GetUserControlStreamBegin(0);
-	DEBUG("------------GetUserControlStreamBegin-------- response:\n%s", STR(response.ToString()));
+//	DEBUG("------------GetUserControlStreamBegin-------- response:\n%s", STR(response.ToString()));
 	if (!SendRTMPMessage(pFrom, response)) {
 		FATAL("Unable to send message to client");
 		return false;
@@ -809,7 +809,7 @@ bool BaseRTMPAppProtocolHandler::ProcessInvokeConnect(BaseRTMPProtocol *pFrom,
 
 	//3. Send the connect result
 	response = ConnectionMessageFactory::GetInvokeConnectResult(request);
-	DEBUG("------------GetInvokeConnectResult-------- response:\n%s", STR(response.ToString()));
+//	DEBUG("------------GetInvokeConnectResult-------- response:\n%s", STR(response.ToString()));
 	if (!SendRTMPMessage(pFrom, response)) {
 		FATAL("Unable to send message to client");
 		return false;
@@ -817,7 +817,7 @@ bool BaseRTMPAppProtocolHandler::ProcessInvokeConnect(BaseRTMPProtocol *pFrom,
 
 	//4. Send onBWDone
 	response = GenericMessageFactory::GetInvokeOnBWDone(1024 * 8);
-	DEBUG("-------------GetInvokeOnBWDone-------- response:\n%s", STR(response.ToString()));
+//	DEBUG("-------------GetInvokeOnBWDone-------- response:\n%s", STR(response.ToString()));
 	if (!SendRTMPMessage(pFrom, response)) {
 		FATAL("Unable to send message to client");
 		return false;
@@ -845,7 +845,7 @@ bool BaseRTMPAppProtocolHandler::ProcessInvokeCreateStream(BaseRTMPProtocol *pFr
 	//2. Send the response
 	Variant response = StreamMessageFactory::GetInvokeCreateStreamResult(request, id);
 	bool result=SendRTMPMessage(pFrom, response);
-	DEBUG("SendRTMPMessage result=%d",id,(int)result);
+	DEBUG("SendRTMPMessage result=%d",(int)result);
 	 return result;
 }
 
@@ -949,16 +949,16 @@ bool BaseRTMPAppProtocolHandler::ProcessInvokePublish(BaseRTMPProtocol *pFrom,
 			FATAL("Invalid stream name %s", STR(streamName));
 			return false;
 		}
-
+		DEBUG(" stream name %s", STR(streamName));
 		if ((meta.type() == MEDIA_TYPE_LIVE_OR_FLV) ||
 				(meta.type() == MEDIA_TYPE_FLV)) {
 			if (!pInNetRTMPStream->RecordFLV(meta, appending)) {
-				FATAL("Unable to bind the recording stream");
+				FATAL("Unable to bind the recording flv stream");
 				return false;
 			}
 		} else if (meta.type() == MEDIA_TYPE_MP4) {
 			if (!pInNetRTMPStream->RecordMP4(meta)) {
-				FATAL("Unable to bind the recording stream");
+				FATAL("Unable to bind the recording MP4 stream");
 				return false;
 			}
 		}

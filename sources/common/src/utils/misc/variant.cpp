@@ -907,11 +907,19 @@ void Variant::SetTypeName(string name) {
 
 bool Variant::HasKey(const string &key, bool caseSensitive) {
 	if ((_type != V_TYPED_MAP) && (_type != V_MAP)) {
-		ASSERT("HasKey failed: %s", STR(ToString()));
+		DEBUG("not map");
+	//	ASSERT("HasKey failed: %s", STR(ToString()));
 		return false;
 	}
 	if (caseSensitive) {
-		return MAP_HAS1(_value.m->children, key);
+/*		std::cout << "HasKey"  << key << std::endl;
+		map<string, Variant>::iterator ite;
+		for ( ite = _value.m->children.begin( ); ite != _value.m->children.end( ); ite++ ) {
+			std::cout << "" << ite->first << ", value: " << ite->second.ToString() << std::endl;
+		}
+		std::cout << "HasKey end " << std::endl;*/
+		bool ret = MAP_HAS1(_value.m->children, key);
+		return ret;
 	} else {
 
 		FOR_MAP(*this, string, Variant, i) {

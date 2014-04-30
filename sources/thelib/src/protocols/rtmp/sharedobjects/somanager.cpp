@@ -60,6 +60,7 @@ bool SOManager::Process(BaseRTMPProtocol *pFrom, Variant &request) {
 SO * SOManager::GetSO(string name, bool persistent) {
 	if (MAP_HAS1(_sos, name))
 		return _sos[name];
+	DEBUG("creat so");
 	SO *pSO = new SO(name, persistent);
 	_sos[name] = pSO;
 	return pSO;
@@ -77,15 +78,20 @@ bool SOManager::ProcessFlexSharedObject(BaseRTMPProtocol *pFrom, Variant &reques
 bool SOManager::ProcessSharedObject(BaseRTMPProtocol *pFrom, Variant &request) {
 	//1. Get the name and the persistance property
 	string name = M_SO_NAME(request);
-	DEBUG("name=%s",STR(name ));
+	DEBUG("request=%s",STR(request.ToString()));
+	DEBUG("name=%s,pFrom=%ld",STR(name ),(long)pFrom);
 	if (pFrom->GetType() == PT_OUTBOUND_RTMP){
 		pFrom->SignalBeginSOProcess(name);
 	}
 
 	SO *pSO = NULL;
-	if (MAP_HAS1(_sos, name))
+	if (MAP_HAS1(_sos, name)){
+		DEBUG("has so");
 		pSO = _sos[name];
-
+	}
+	else{
+		DEBUG("no so");
+	}
 	//3. Hit the SO with the operations requested
 	for (uint32_t i = 0; i < M_SO_PRIMITIVES(request).MapSize(); i++) {
 		if (!ProcessSharedObjectPrimitive(pFrom, pSO, name, request, i)) {
@@ -99,9 +105,10 @@ bool SOManager::ProcessSharedObject(BaseRTMPProtocol *pFrom, Variant &request) {
 
 	//4. Get the SO again, but ONLY is it is stil alive
 	pSO = NULL;
-	if (MAP_HAS1(_sos, name))
+	if (MAP_HAS1(_sos, name)){
+		DEBUG("2 has so");
 		pSO = _sos[name];
-
+		}
 	//5. Track it if is alive
 	if (pSO != NULL)
 		pSO->Track();
@@ -149,6 +156,7 @@ bool SOManager::ProcessSharedObjectPrimitive(BaseRTMPProtocol *pFrom, SO *pSO,
 			}
 
 			FOR_MAP(primitive[RM_SHAREDOBJECTPRIMITIVE_PAYLOAD], string, Variant, i) {
+		//		DEBUG("key=%s,value=%s",STR(MAP_KEY(i)),STR(MAP_VAL(i)));
 				pSO->Set((string &) MAP_KEY(i), MAP_VAL(i), M_SO_VER(request),
 						pFrom->GetId());
 			}

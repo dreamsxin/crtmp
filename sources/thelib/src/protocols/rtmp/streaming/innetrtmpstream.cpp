@@ -384,11 +384,29 @@ string InNetRTMPStream::GetRecordedFileName(Metadata &meta) {
 	BaseClientApplication *pApplication = NULL;
 	StreamMetadataResolver *pSM = NULL;
 	string recordedStreamsStorage = "";
+	DEBUG("computedCompleteFileName=%s",STR(meta.computedCompleteFileName()));
+	pProtocol = GetProtocol();
+	pApplication = pProtocol->GetApplication();
+	pSM = pApplication->GetStreamMetadataResolver();
+	if(pSM==NULL){
+		FATAL("pSM==NULL");
+		return "";
+	}
+
+//	DEBUG("pSM=%s",STR(pSM));
+	recordedStreamsStorage = pSM->GetRecordedStreamsStorage();
+	if(recordedStreamsStorage== ""){
+		recordedStreamsStorage="/home/yili/workspace/yili/stor2/";
+	//	FATAL("recordedStreamsStorage==""");
+	//	return "";
+	}
+	DEBUG("--------2---------");
+	DEBUG("recordedStreamsStorage=%s",STR(recordedStreamsStorage));
 	if ((meta.computedCompleteFileName() == "")
 			|| ((pProtocol = GetProtocol()) == NULL)
 			|| ((pApplication = pProtocol->GetApplication()) == NULL)
 			|| ((pSM = pApplication->GetStreamMetadataResolver()) == NULL)
-			|| ((recordedStreamsStorage = pSM->GetRecordedStreamsStorage()) == "")
+	//		|| (() == "")
 			) {
 		FATAL("Unable to compute the destination file path");
 		return "";

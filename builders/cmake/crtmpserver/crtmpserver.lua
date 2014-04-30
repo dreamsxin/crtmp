@@ -180,25 +180,25 @@ configuration=
 					--mediaFolder
 					description="Some storage",
 					mediaFolder="/home/yili/workspace/yili",
-					metaFolder="/home/yili/workspace/yili",
+					metaFolder="/home/yili/workspace/yili/temp",
 					enableStats=true,
 					clientSideBuffer=15,
 					keyframeSeek=false,
 					seekGranularity=0.1,
 				},
 				namedStorage2={
-					mediaFolder="/home/yili/workspace/yili",
-					metaFolder="/home/yili/workspace/yili",
+					mediaFolder="/home/yili/workspace/yili/stor2",
+					metaFolder="/home/yili/workspace/yili/stor2",
 					seekGranularity=0.2,
 					enableStats=true,
 				},
 				namedStorage3={
-					mediaFolder="/home/yili/workspace/yili",
-					metaFolder="/home/yili/workspace/yili",
+					mediaFolder="/home/yili/workspace/yili/stor3",
+					metaFolder="/home/yili/workspace/yili/stor3",
 				},
 				{
 					--this one doesn't have a name
-					mediaFolder="/tmp/Storage/media/mp3",
+					mediaFolder="/home/yili/workspace/yili/media",
 				}
 			},
 		},

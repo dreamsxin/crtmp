@@ -191,7 +191,7 @@
 						  text="{_availableFlvs[dgFlvs.selectedIndex].flvName}"/>
 			<mx:Label text="Connecting string"/>
 			<mx:TextInput id="connectingString" width="100%" backgroundColor="#404040"
-						  text="rtmp://127.0.0.1/flvplayback"/>
+						  text="rtmp://192.168.1.126/flvplayback"/>
 			<mx:HBox width="100%">
 				<mx:Button width="100%" label="{IsConnected?'Disconnect':'Connect'}"
 						   click="ConnectDisconnect();"/>
