@@ -29,6 +29,9 @@ public:
 	static Variant GetSharedObject(uint32_t channelId, uint32_t streamId,
 			double timeStamp, bool isAbsolute, string name, uint32_t version,
 			bool persistent);
+	static Variant GetFlexSharedObject(uint32_t channelId, uint32_t streamId,
+			double timeStamp, bool isAbsolute, string name, uint32_t version,
+			bool persistent);
 	static void AddSOPrimitiveConnect(Variant &message);
 	static void AddSOPrimitiveSend(Variant &message, Variant &params);
 	static void AddSOPrimitiveSetProperty(Variant &message, string &propName,

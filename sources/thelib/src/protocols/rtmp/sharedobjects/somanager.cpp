@@ -81,6 +81,7 @@ bool SOManager::ProcessSharedObject(BaseRTMPProtocol *pFrom, Variant &request) {
 	DEBUG("request=%s",STR(request.ToString()));
 	DEBUG("name=%s,pFrom=%ld",STR(name ),(long)pFrom);
 	if (pFrom->GetType() == PT_OUTBOUND_RTMP){
+		DEBUG("PT_OUTBOUND_RTMP");
 		pFrom->SignalBeginSOProcess(name);
 	}
 
@@ -97,8 +98,10 @@ bool SOManager::ProcessSharedObject(BaseRTMPProtocol *pFrom, Variant &request) {
 		if (!ProcessSharedObjectPrimitive(pFrom, pSO, name, request, i)) {
 			FATAL("Unable to process primitive %u from\n%s", i,
 					STR(request.ToString()));
-			if (pFrom->GetType() == PT_OUTBOUND_RTMP)
+			if (pFrom->GetType() == PT_OUTBOUND_RTMP){
+				DEBUG("PT_OUTBOUND_RTMP");
 				pFrom->SignalEndSOProcess(name, M_SO_VER(request));
+			}
 			return false;
 		}
 	}
@@ -114,8 +117,10 @@ bool SOManager::ProcessSharedObject(BaseRTMPProtocol *pFrom, Variant &request) {
 		pSO->Track();
 
 	//6. Done
-	if (pFrom->GetType() == PT_OUTBOUND_RTMP)
+	if (pFrom->GetType() == PT_OUTBOUND_RTMP){
+		DEBUG("PT_OUTBOUND_RTMP");
 		pFrom->SignalEndSOProcess(name, M_SO_VER(request));
+		}
 	return true;
 }
 

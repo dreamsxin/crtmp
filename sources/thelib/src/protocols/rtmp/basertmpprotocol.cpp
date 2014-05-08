@@ -151,7 +151,7 @@ void BaseRTMPProtocol::SignalBeginSOProcess(string &name) {
 void BaseRTMPProtocol::SignalEndSOProcess(string &name, uint32_t versionNumber) {
 	ClientSO *pSO = NULL;
 	if (!MAP_HAS1(_sos, name)) {
-		//FATAL("Client SO %s not found", STR(name));
+		FATAL("Client SO %s not found", STR(name));
 		return;
 	}
 	pSO = _sos[name];

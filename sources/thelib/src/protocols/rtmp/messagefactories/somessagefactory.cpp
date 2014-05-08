@@ -36,6 +36,21 @@ Variant SOMessageFactory::GetSharedObject(uint32_t channelId, uint32_t streamId,
 	return result;
 }
 
+Variant SOMessageFactory::GetFlexSharedObject(uint32_t channelId, uint32_t streamId,
+		double timeStamp, bool isAbsolute, string name, uint32_t version,
+		bool persistent) {
+	Variant result;
+
+	VH(result, HT_SAME_STREAM, channelId, timeStamp, 0,
+			RM_HEADER_MESSAGETYPE_FLEXSHAREDOBJECT, streamId, isAbsolute);
+
+	result[RM_SHAREDOBJECT][RM_SHAREDOBJECT_NAME] = name;
+	result[RM_SHAREDOBJECT][RM_SHAREDOBJECT_VERSION] = version;
+	result[RM_SHAREDOBJECT][RM_SHAREDOBJECT_PERSISTENCE] = persistent;
+
+	return result;
+}
+
 void SOMessageFactory::AddSOPrimitiveConnect(Variant &message) {
 	Variant primitive;
 	primitive[RM_SHAREDOBJECTPRIMITIVE_TYPE] = SOT_CS_CONNECT;
@@ -55,14 +70,19 @@ void SOMessageFactory::AddSOPrimitiveSend(Variant &message, Variant &params) {
 void SOMessageFactory::AddSOPrimitiveSetProperty(Variant &message, string &propName,
 		Variant &propValue) {
 	Variant primitive;
+	primitive.IsArray(false);
 	if ((propValue == V_NULL) || (propValue == V_UNDEFINED)) {
 		primitive[RM_SHAREDOBJECTPRIMITIVE_TYPE] = SOT_CS_DELETE_FIELD_REQUEST;
 		primitive[RM_SHAREDOBJECTPRIMITIVE_PAYLOAD].PushToArray(propName);
 	} else {
 		primitive[RM_SHAREDOBJECTPRIMITIVE_TYPE] = SOT_CS_UPDATE_FIELD_REQUEST;
+		primitive[RM_SHAREDOBJECTPRIMITIVE_STRTYPE] ="SOT_CS_UPDATE_FIELD_REQUEST";
 		primitive[RM_SHAREDOBJECTPRIMITIVE_PAYLOAD][propName] = propValue;
 	}
+
 	M_SO_PRIMITIVES(message).PushToArray(primitive);
+	M_SO_PRIMITIVES(message).IsArray(false);
+
 }
 #endif /* HAS_PROTOCOL_RTMP */
 

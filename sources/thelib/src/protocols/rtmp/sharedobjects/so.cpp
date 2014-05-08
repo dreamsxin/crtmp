@@ -174,7 +174,7 @@ void SO::Track() {
 		for (uint32_t i = 0; i < primitives.size(); i++)
 			M_SO_PRIMITIVE(message, i) = primitives[i];
 
-
+		DEBUG("message=%s",STR(message.ToString()));
 		if (pTo != NULL) {
 			//DEBUG("so-SendMessage=%s",STR(message.ToString()));
 			if (!pTo->SendMessage(message)) {
@@ -212,6 +212,24 @@ Variant & SO::Set(string &key, Variant &value, uint32_t version, uint32_t protoc
 		} else {
 			di.type = SOT_CS_UPDATE_FIELD;
 		}
+		ADD_VECTOR_END(_dirtyPropsByProtocol[currentProtocolId], di);
+	}
+
+	return _payload[key];
+}
+
+Variant & SO::SetAll(string &key, Variant &value, uint32_t version, uint32_t protocolId) {
+	if (!_versionIncremented) {
+		_version++;
+		_versionIncremented = true;
+	}
+	_payload[key] = value;
+
+	FOR_MAP(_registeredProtocols, uint32_t, uint32_t, i) {
+		uint32_t currentProtocolId = MAP_VAL(i);
+		DirtyInfo di;
+		di.propertyName = key;
+		di.type = SOT_CS_UPDATE_FIELD;
 		ADD_VECTOR_END(_dirtyPropsByProtocol[currentProtocolId], di);
 	}
 

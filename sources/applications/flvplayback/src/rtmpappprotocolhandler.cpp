@@ -96,8 +96,8 @@ bool RTMPAppProtocolHandler::ProcessInvokeGeneric(BaseRTMPProtocol *pFrom,
 		return ProcessGetMembers(pFrom, request);
 	}else if(functionName == "shotout"){
 		return ProcessShotout(pFrom, request);
-	}else if(functionName == "test"){
-		return ProcessTest(pFrom, request);
+	}else if(functionName == "sotest"){
+		return ProcessSOTest(pFrom, request);
 	}
 	else {
 		return BaseRTMPAppProtocolHandler::ProcessInvokeGeneric(pFrom, request);
@@ -219,36 +219,16 @@ bool RTMPAppProtocolHandler::ProcessShotout(BaseRTMPProtocol *pFrom, Variant &re
 	return true;
 }
 
-bool RTMPAppProtocolHandler::ProcessTest(BaseRTMPProtocol *pFrom, Variant &request) {
-	Variant parameters;
-	parameters.PushToArray(Variant());
-	parameters.PushToArray(Variant());
+bool RTMPAppProtocolHandler::ProcessSOTest(BaseRTMPProtocol *pFrom, Variant &request) {
 
 	DEBUG("pFrom:%ld", (long)pFrom);
 	DEBUG("request:\n%s", STR(request.ToString()));
 	
-/*	uint32_t protocolId = (uint32_t)M_INVOKE_PARAM(request,1);
-	DEBUG("protocolId =%d", protocolId);
-	
-	if (MAP_HAS1(_connections, protocolId)){
-		FOR_MAP(_connections, uint32_t, BaseRTMPProtocol *, i) 
-		{
-			BaseRTMPProtocol *pProtocol =	MAP_VAL(i);
-			if ((pProtocol->GetApplication() != NULL) && (pProtocol ->GetId() ==protocolId)) {
-				DEBUG("find  pProtocol");
-				pProtocol->CloseAllStream();				
-				break;
-			}
-		}
-		return true;
-	}*/
-
-	Variant compxValue;
-	compxValue["x"]=45;
-	compxValue["y"]=36;
+	Variant propValue;
+	propValue["x"]=45;
+	propValue["y"]=36;
 	string soname="boxData";
 	string propName="boxXY";
-//	pFrom->ClientSOSetProperty(soname,propName,compxValue);
 
 	SOManager * soM=GetSOManager();
 	if(soM->ContainsSO(soname)==false)
@@ -258,18 +238,22 @@ bool RTMPAppProtocolHandler::ProcessTest(BaseRTMPProtocol *pFrom, Variant &reque
 	}
 
 	SO *so=soM->GetSO("boxData", true);
-	DEBUG("SO.boxData=%s",STR(so->DumpTrack()));
-	
-	Variant message = SOMessageFactory::GetSharedObject(3, 0, 0, false, soname,
-			1, false);
-	SOMessageFactory::AddSOPrimitiveSend(message, parameters);
-	DEBUG("1111111");
-	SOMessageFactory::AddSOPrimitiveSetProperty(message,propName, compxValue);
-	DEBUG("222222");
-	so->SendMessage(message);
-	DEBUG("333333");
-	return pFrom->SendMessage(message);
-	
+	Variant message = SOMessageFactory::GetFlexSharedObject(3, 0, 0, false, soname,1, false);
+	SOMessageFactory::AddSOPrimitiveSetProperty(message,propName, propValue);
+	DEBUG("333333,message=%s",STR(message.ToString()));
+
+	for (uint32_t i = 0; i < M_SO_PRIMITIVES(message).MapSize(); i++) {
+		Variant primitive = M_SO_PRIMITIVE(message, i);
+			FOR_MAP(primitive[RM_SHAREDOBJECTPRIMITIVE_PAYLOAD], string, Variant, i) {
+
+				so->SetAll((string &) MAP_KEY(i), MAP_VAL(i), M_SO_VER(request),
+						pFrom->GetId());
+			}
+	}
+
+	if (so != NULL)
+		so->Track();
+	return true;
 }
 #endif /* HAS_PROTOCOL_RTMP */
 

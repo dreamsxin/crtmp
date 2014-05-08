@@ -60,11 +60,13 @@ public:
 
 	string DumpTrack();
 	void Track();
-
+	void TrackAll() ;
 	operator string();
 
 	Variant & Get(string &key);
 	Variant & Set(string &key, Variant &value, uint32_t version,
+			uint32_t protocolId);
+	Variant & SetAll(string &key, Variant &value, uint32_t version,
 			uint32_t protocolId);
 	void UnSet(string key, uint32_t version);
 	bool SendMessage(Variant &message);
