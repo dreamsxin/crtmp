@@ -174,7 +174,7 @@ void SO::Track() {
 		for (uint32_t i = 0; i < primitives.size(); i++)
 			M_SO_PRIMITIVE(message, i) = primitives[i];
 
-		DEBUG("message=%s",STR(message.ToString()));
+//		DEBUG("message=%s",STR(message.ToString()));
 		if (pTo != NULL) {
 			//DEBUG("so-SendMessage=%s",STR(message.ToString()));
 			if (!pTo->SendMessage(message)) {

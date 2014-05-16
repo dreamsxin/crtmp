@@ -70,7 +70,6 @@ void SOMessageFactory::AddSOPrimitiveSend(Variant &message, Variant &params) {
 void SOMessageFactory::AddSOPrimitiveSetProperty(Variant &message, string &propName,
 		Variant &propValue) {
 	Variant primitive;
-	primitive.IsArray(false);
 	if ((propValue == V_NULL) || (propValue == V_UNDEFINED)) {
 		primitive[RM_SHAREDOBJECTPRIMITIVE_TYPE] = SOT_CS_DELETE_FIELD_REQUEST;
 		primitive[RM_SHAREDOBJECTPRIMITIVE_PAYLOAD].PushToArray(propName);
@@ -81,8 +80,6 @@ void SOMessageFactory::AddSOPrimitiveSetProperty(Variant &message, string &propN
 	}
 
 	M_SO_PRIMITIVES(message).PushToArray(primitive);
-	M_SO_PRIMITIVES(message).IsArray(false);
-
 }
 #endif /* HAS_PROTOCOL_RTMP */
 

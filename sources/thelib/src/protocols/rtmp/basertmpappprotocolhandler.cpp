@@ -421,7 +421,6 @@ bool BaseRTMPAppProtocolHandler::InboundMessageAvailable(BaseRTMPProtocol *pFrom
 	switch (pFrom->GetType()) {
 		case PT_INBOUND_RTMP:
 		{
-			
 			if (_authMethod != "") {
 			//	DEBUG(" has _authMethod");
 				if (!AuthenticateInbound(pFrom, request, authState)) {

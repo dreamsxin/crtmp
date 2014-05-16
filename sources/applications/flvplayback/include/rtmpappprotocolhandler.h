@@ -32,6 +32,7 @@ namespace app_flvplayback {
 		RTMPAppProtocolHandler(Variant &configuration);
 		virtual ~RTMPAppProtocolHandler();
 		virtual bool ProcessInvokeConnect(BaseRTMPProtocol *pFrom, Variant &request);
+		virtual bool ProcessInvokeClose(BaseRTMPProtocol *pFrom, Variant &request) ;
 		virtual bool ProcessInvokeGeneric(BaseRTMPProtocol *pFrom,
 				Variant &request);
 	private:
@@ -42,6 +43,9 @@ namespace app_flvplayback {
 		bool ProcessCloseStream(BaseRTMPProtocol *pFrom, Variant &request);
 		bool ProcessShotout(BaseRTMPProtocol *pFrom, Variant &request) ;
 		bool ProcessSOTest(BaseRTMPProtocol *pFrom, Variant &request);
+		bool TrackMemberSO(BaseRTMPProtocol *pFrom, Variant &request,string name) ;
+		bool TrackMemberDelSO(BaseRTMPProtocol *pFrom, Variant &request) ;
+		
 	};
 }
 #endif	/* _RTMPAPPPROTOCOLHANDLER_H */

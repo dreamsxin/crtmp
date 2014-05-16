@@ -78,8 +78,8 @@ bool SOManager::ProcessFlexSharedObject(BaseRTMPProtocol *pFrom, Variant &reques
 bool SOManager::ProcessSharedObject(BaseRTMPProtocol *pFrom, Variant &request) {
 	//1. Get the name and the persistance property
 	string name = M_SO_NAME(request);
-	DEBUG("request=%s",STR(request.ToString()));
-	DEBUG("name=%s,pFrom=%ld",STR(name ),(long)pFrom);
+//	DEBUG("request=%s",STR(request.ToString()));
+//	DEBUG("name=%s,pFrom=%ld",STR(name ),(long)pFrom);
 	if (pFrom->GetType() == PT_OUTBOUND_RTMP){
 		DEBUG("PT_OUTBOUND_RTMP");
 		pFrom->SignalBeginSOProcess(name);

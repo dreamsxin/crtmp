@@ -74,6 +74,7 @@ TCPCarrier::~TCPCarrier() {
 
 bool TCPCarrier::OnEvent(struct epoll_event &event) {
 	//1. Read data
+
 	if ((event.events & EPOLLIN) != 0) {
 		IOBuffer *pInputBuffer = _pProtocol->GetInputBuffer();
 		o_assert(pInputBuffer != NULL);

@@ -39,6 +39,11 @@ RTMPAppProtocolHandler::RTMPAppProtocolHandler(Variant &configuration)
 RTMPAppProtocolHandler::~RTMPAppProtocolHandler() {
 }
 
+bool RTMPAppProtocolHandler::ProcessInvokeClose(BaseRTMPProtocol *pFrom, Variant &request) {
+	TrackMemberDelSO(pFrom,request);
+	return BaseRTMPAppProtocolHandler::ProcessInvokeClose(pFrom,request);
+}
+
 bool RTMPAppProtocolHandler::ProcessInvokeConnect(BaseRTMPProtocol *pFrom,
 		Variant &request) {
 	//1. Get the username and the password
@@ -63,7 +68,8 @@ bool RTMPAppProtocolHandler::ProcessInvokeConnect(BaseRTMPProtocol *pFrom,
 
 	pFrom->clientname=format("%s",STR(username));
 	DEBUG("clientname:%s", STR(pFrom->clientname));
-	
+
+	TrackMemberSO(pFrom,request,pFrom->clientname);
 	//2. ***VERY*** basic authentication to get the ball rolling
 /*	if ((username != "xiaoting" || password != "123456") &&(username != "yili" || password != "guosheng") && (username != "test" || password != "guosheng")){
 		FATAL("Auth failed");
@@ -240,6 +246,8 @@ bool RTMPAppProtocolHandler::ProcessSOTest(BaseRTMPProtocol *pFrom, Variant &req
 	SO *so=soM->GetSO("boxData", true);
 	Variant message = SOMessageFactory::GetFlexSharedObject(3, 0, 0, false, soname,1, false);
 	SOMessageFactory::AddSOPrimitiveSetProperty(message,propName, propValue);
+	M_SO_PRIMITIVES(message).IsArray(false);
+
 	DEBUG("333333,message=%s",STR(message.ToString()));
 
 	for (uint32_t i = 0; i < M_SO_PRIMITIVES(message).MapSize(); i++) {
@@ -255,5 +263,85 @@ bool RTMPAppProtocolHandler::ProcessSOTest(BaseRTMPProtocol *pFrom, Variant &req
 		so->Track();
 	return true;
 }
+
+bool RTMPAppProtocolHandler::TrackMemberSO(BaseRTMPProtocol *pFrom, Variant &request,string name) {
+
+	string soname="memberList";
+	string propName="list";
+	SOManager * soM=GetSOManager();
+	SO *so=soM->GetSO(soname, false);
+	string key = format("%u",pFrom->GetId());
+	Variant propValue	;
+	if(so->HasProperty(propName)){
+		Variant payload=so->GetPayload();
+		propValue=payload[propName];
+		propValue[key]=name;
+	}
+	else{
+		propValue[key]=name;
+	}
+
+	//DEBUG("------333------propValue=\n%s",STR(propValue.ToString()));
+
+	Variant message = SOMessageFactory::GetFlexSharedObject(3, 0, 0, false, soname,1, false);
+	SOMessageFactory::AddSOPrimitiveSetProperty(message,propName, propValue);
+	M_SO_PRIMITIVES(message).IsArray(false);
+
+	//DEBUG("message=\n%s",STR(message.ToString()));
+
+	for (uint32_t i = 0; i < M_SO_PRIMITIVES(message).MapSize(); i++) {
+		Variant primitive = M_SO_PRIMITIVE(message, i);
+			FOR_MAP(primitive[RM_SHAREDOBJECTPRIMITIVE_PAYLOAD], string, Variant, i) {
+
+				so->SetAll((string &) MAP_KEY(i), MAP_VAL(i), M_SO_VER(request),
+						pFrom->GetId());
+			}
+	}
+
+	if (so != NULL)
+		so->Track();
+	return true;
+
+}
+
+bool RTMPAppProtocolHandler::TrackMemberDelSO(BaseRTMPProtocol *pFrom, Variant &request) {
+
+	string soname="memberList";
+	string propName="list";
+	SOManager * soM=GetSOManager();
+	SO *so=soM->GetSO(soname, false);
+	//so->RegisterProtocol(pFrom->GetId());
+	Variant propValue	;
+	string key = format("%u",pFrom->GetId());
+	if(so->HasProperty(propName)){
+		Variant payload=so->GetPayload();
+		propValue=payload[propName];
+		propValue.RemoveKey(key);
+	}else{
+		return false;
+	}
+//	DEBUG("------333------propValue=\n%s",STR(propValue.ToString()));
+
+	Variant message = SOMessageFactory::GetFlexSharedObject(3, 0, 0, false, soname,1, false);
+	SOMessageFactory::AddSOPrimitiveSetProperty(message,propName, propValue);
+	M_SO_PRIMITIVES(message).IsArray(false);
+
+	DEBUG("message=\n%s",STR(message.ToString()));
+
+	for (uint32_t i = 0; i < M_SO_PRIMITIVES(message).MapSize(); i++) {
+		Variant primitive = M_SO_PRIMITIVE(message, i);
+			FOR_MAP(primitive[RM_SHAREDOBJECTPRIMITIVE_PAYLOAD], string, Variant, i) {
+
+				so->SetAll((string &) MAP_KEY(i), MAP_VAL(i), M_SO_VER(request),
+						pFrom->GetId());
+			}
+	}
+
+	if (so != NULL)
+		so->Track();
+	return true;
+
+}
+
 #endif /* HAS_PROTOCOL_RTMP */
 
