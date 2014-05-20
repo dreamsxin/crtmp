@@ -45,7 +45,7 @@ namespace app_flvplayback {
 		bool ProcessSOTest(BaseRTMPProtocol *pFrom, Variant &request);
 		bool TrackMemberSO(BaseRTMPProtocol *pFrom, Variant &request,string name) ;
 		bool TrackMemberDelSO(BaseRTMPProtocol *pFrom, Variant &request) ;
-		
+		bool ProcessSendMessage(BaseRTMPProtocol *pFrom, Variant &request) ;
 	};
 }
 #endif	/* _RTMPAPPPROTOCOLHANDLER_H */

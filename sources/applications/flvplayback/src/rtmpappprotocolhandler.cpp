@@ -105,6 +105,9 @@ bool RTMPAppProtocolHandler::ProcessInvokeGeneric(BaseRTMPProtocol *pFrom,
 	}else if(functionName == "sotest"){
 		return ProcessSOTest(pFrom, request);
 	}
+	else if(functionName == "chatMessage"){
+		return ProcessSendMessage(pFrom, request);
+	}
 	else {
 		return BaseRTMPAppProtocolHandler::ProcessInvokeGeneric(pFrom, request);
 	}
@@ -341,6 +344,60 @@ bool RTMPAppProtocolHandler::TrackMemberDelSO(BaseRTMPProtocol *pFrom, Variant &
 		so->Track();
 	return true;
 
+}
+
+
+bool RTMPAppProtocolHandler::ProcessSendMessage(BaseRTMPProtocol *pFrom, Variant &request) {
+	DEBUG("request:\n%s", STR(request.ToString()));
+	
+//	uint32_t protocolId = (uint32_t)M_INVOKE_PARAM(request,1);
+//	DEBUG("protocolId =%d", protocolId);
+	string context = M_INVOKE_PARAM(request,1);
+	Variant  clientName= M_INVOKE_PARAM(request,2);
+
+	Variant compxValue;
+	compxValue["sender"]=pFrom->clientname;
+	compxValue["message"]=context;
+	compxValue["time"]=Variant::Now() ;
+	if ((clientName == V_NULL) || (clientName == V_UNDEFINED) || clientName == "" ) {
+		compxValue["clientname"]="";
+	}else{
+		compxValue["clientname"]=clientName;
+	}
+
+	Variant parameters;
+	parameters.PushToArray(Variant());
+	parameters["message"] = Variant(compxValue);
+	
+	DEBUG("parameters:\n%s", STR(parameters.ToString()));
+	Variant message = GenericMessageFactory::GetInvoke(3, 0, 0, false, 0,
+	"OnMessage", parameters);
+
+	DEBUG("message:\n%s", STR(message.ToString()));
+	
+	if ((clientName == V_NULL) || (clientName == V_UNDEFINED) || clientName == "" ) {
+		FOR_MAP(_connections, uint32_t, BaseRTMPProtocol *, i) 
+		{
+			BaseRTMPProtocol *pProtocol =	MAP_VAL(i);
+			SendRTMPMessage(pProtocol, message);
+		}
+	}
+	else{
+		string  clientname= M_INVOKE_PARAM(request,2);
+		
+		FOR_MAP(_connections, uint32_t, BaseRTMPProtocol *, i) 
+		{
+			BaseRTMPProtocol *pProtocol =	MAP_VAL(i);
+			if ((pProtocol->GetApplication() != NULL) && (strcmp(pProtocol ->clientname.c_str(),clientname.c_str())==0)) {
+				DEBUG("find  name");
+				BaseRTMPProtocol *pProtocol =	MAP_VAL(i);
+				SendRTMPMessage(pProtocol, message);
+				break;
+			}
+		}
+		SendRTMPMessage(pFrom, message);
+	}
+	return true;
 }
 
 #endif /* HAS_PROTOCOL_RTMP */
