@@ -113,6 +113,7 @@ configuration=
 				"WeeklyQuest",
 				"SOSample",
 				"oflaDemo",
+				"myleft",
 			},
 			acceptors = 
 			{

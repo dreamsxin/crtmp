@@ -112,6 +112,7 @@ bool RTMPAppProtocolHandler::OutboundConnectionEstablished(
 		FATAL("No app specified in the outbound connection parameters");
 		return false;
 	}
+	
 	if (appName[appName.length() - 1] == '/')
 		appName = appName.substr(0, appName.length() - 1);
 

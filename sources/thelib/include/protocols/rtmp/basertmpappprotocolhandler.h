@@ -79,7 +79,7 @@ public:
 	 * */
 	virtual void RegisterProtocol(BaseProtocol *pProtocol);
 	virtual void UnRegisterProtocol(BaseProtocol *pProtocol);
-
+        void TrackMemberDelSO(BaseProtocol *pProtocol) ;
 	/*
 	 * This is called by the framework when a stream needs to be pulled in
 	 * Basically, this will open a RTMP client and start playback a stream

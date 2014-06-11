@@ -169,6 +169,8 @@ void BaseRTMPAppProtocolHandler::RegisterProtocol(BaseProtocol *pProtocol) {
 }
 
 void BaseRTMPAppProtocolHandler::UnRegisterProtocol(BaseProtocol *pProtocol) {
+	DEBUG("-------------------UnRegisterProtocol-----------------");
+	TrackMemberDelSO(pProtocol);
 	_soManager.UnRegisterProtocol((BaseRTMPProtocol*) pProtocol);
 	if (!MAP_HAS1(_connections, pProtocol->GetId())) {
 		return;
@@ -177,6 +179,44 @@ void BaseRTMPAppProtocolHandler::UnRegisterProtocol(BaseProtocol *pProtocol) {
 	_nextInvokeId.erase(pProtocol->GetId());
 	_resultMessageTracking.erase(pProtocol->GetId());
 }
+
+//BaseRTMPProtocol *pFrom
+void BaseRTMPAppProtocolHandler::TrackMemberDelSO(BaseProtocol *pProtocol) {
+	string soname="memberList";
+	string propName="list";
+	SO *so=_soManager.GetSO(soname, false);
+	//so->RegisterProtocol(pFrom->GetId());
+	Variant propValue	;
+	string key = format("%u",pProtocol->GetId());
+	if(so->HasProperty(propName)){
+		Variant payload=so->GetPayload();
+		propValue=payload[propName];
+		propValue.RemoveKey(key);
+	}else{
+		return ;
+	}
+	DEBUG("------333------propValue=\n%s",STR(propValue.ToString()));
+
+	Variant message = SOMessageFactory::GetFlexSharedObject(3, 0, 0, false, soname,1, false);
+	SOMessageFactory::AddSOPrimitiveSetProperty(message,propName, propValue);
+	M_SO_PRIMITIVES(message).IsArray(false);
+
+	DEBUG("message=\n%s",STR(message.ToString()));
+	Variant nullVar;
+	for (uint32_t i = 0; i < M_SO_PRIMITIVES(message).MapSize(); i++) {
+		Variant primitive = M_SO_PRIMITIVE(message, i);
+			FOR_MAP(primitive[RM_SHAREDOBJECTPRIMITIVE_PAYLOAD], string, Variant, i) {
+
+				so->SetAll((string &) MAP_KEY(i), MAP_VAL(i), nullVar,
+						pProtocol->GetId());
+			}
+	}
+
+	if (so != NULL)
+		so->Track();
+	return;
+}
+
 
 bool BaseRTMPAppProtocolHandler::PullExternalStream(URI uri, Variant streamConfig) {
 	//1. normalize the stream name

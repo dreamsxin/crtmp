@@ -35,7 +35,12 @@ namespace app_flvplayback {
 		virtual bool ProcessInvokeClose(BaseRTMPProtocol *pFrom, Variant &request) ;
 		virtual bool ProcessInvokeGeneric(BaseRTMPProtocol *pFrom,
 				Variant &request);
+
+		virtual bool ProcessInvokeCreateStream(BaseRTMPProtocol *pFrom,Variant &request) ;
+		virtual bool ProcessInvokePublish(BaseRTMPProtocol *pFrom,Variant &request) ;
+		virtual bool ProcessInvokePlay(BaseRTMPProtocol *pFrom,Variant & request);
 	private:
+		bool ProcessAttendClass(BaseRTMPProtocol *pFrom,Variant & request);
 		bool ProcessGetAvailableFlvs(BaseRTMPProtocol *pFrom, Variant &request);
 		bool ProcessInsertMetadata(BaseRTMPProtocol *pFrom, Variant &request);
 		bool ProcessGetDemondFlvs(BaseRTMPProtocol *pFrom, Variant &request) ;
@@ -46,6 +51,7 @@ namespace app_flvplayback {
 		bool TrackMemberSO(BaseRTMPProtocol *pFrom, Variant &request,string name) ;
 		bool TrackMemberDelSO(BaseRTMPProtocol *pFrom, Variant &request) ;
 		bool ProcessSendMessage(BaseRTMPProtocol *pFrom, Variant &request) ;
+		bool ProcessSendMessageTo(BaseRTMPProtocol *pFrom, Variant &request) ;
 	};
 }
 #endif	/* _RTMPAPPPROTOCOLHANDLER_H */

@@ -66,10 +66,10 @@ bool RTMPAppProtocolHandler::ProcessInvokeConnect(BaseRTMPProtocol *pFrom,
 			return false;
 	}
 
-	pFrom->clientname=format("%s",STR(username));
-	DEBUG("clientname:%s", STR(pFrom->clientname));
+	pFrom->_clientname=format("%s",STR(username));
+	DEBUG("clientname:%s", STR(pFrom->_clientname));
 
-	TrackMemberSO(pFrom,request,pFrom->clientname);
+	TrackMemberSO(pFrom,request,pFrom->_clientname);
 	//2. ***VERY*** basic authentication to get the ball rolling
 /*	if ((username != "xiaoting" || password != "123456") &&(username != "yili" || password != "guosheng") && (username != "test" || password != "guosheng")){
 		FATAL("Auth failed");
@@ -87,6 +87,24 @@ bool RTMPAppProtocolHandler::ProcessInvokeConnect(BaseRTMPProtocol *pFrom,
 }
 
 
+bool RTMPAppProtocolHandler::ProcessInvokeCreateStream(BaseRTMPProtocol *pFrom,
+		Variant &request) {
+	DEBUG("request =%s", STR(request.ToString()));
+	return BaseRTMPAppProtocolHandler::ProcessInvokeCreateStream(pFrom,request);
+}
+
+bool RTMPAppProtocolHandler::ProcessInvokePublish(BaseRTMPProtocol *pFrom,
+		Variant &request) {
+	DEBUG("request =%s", STR(request.ToString()));
+	return BaseRTMPAppProtocolHandler::ProcessInvokePublish(pFrom,request);
+}
+
+bool RTMPAppProtocolHandler::ProcessInvokePlay(BaseRTMPProtocol *pFrom,
+		Variant & request){
+	DEBUG("request =%s", STR(request.ToString()));
+	return BaseRTMPAppProtocolHandler::ProcessInvokePlay(pFrom,request);
+}
+		
 bool RTMPAppProtocolHandler::ProcessInvokeGeneric(BaseRTMPProtocol *pFrom,
 		Variant &request) {
 
@@ -107,10 +125,17 @@ bool RTMPAppProtocolHandler::ProcessInvokeGeneric(BaseRTMPProtocol *pFrom,
 	}
 	else if(functionName == "chatMessage"){
 		return ProcessSendMessage(pFrom, request);
+	}else if(functionName == "chatMessageto"){
+		return ProcessSendMessageTo(pFrom, request);
 	}
 	else {
 		return BaseRTMPAppProtocolHandler::ProcessInvokeGeneric(pFrom, request);
 	}
+}
+
+bool RTMPAppProtocolHandler::ProcessAttendClass(BaseRTMPProtocol *pFrom,Variant & request){
+	DEBUG("request =%s", STR(request.ToString()));
+	return true;
 }
 
 bool RTMPAppProtocolHandler::ProcessGetAvailableFlvs(BaseRTMPProtocol *pFrom, Variant &request) {
@@ -133,7 +158,7 @@ bool RTMPAppProtocolHandler::ProcessGetAvailableFlvs(BaseRTMPProtocol *pFrom, Va
 }
 
 bool RTMPAppProtocolHandler::ProcessInsertMetadata(BaseRTMPProtocol *pFrom, Variant &request) {
-	NYIR;
+	return true;
 }
 
 
@@ -208,7 +233,7 @@ bool RTMPAppProtocolHandler::ProcessShotout(BaseRTMPProtocol *pFrom, Variant &re
 		FOR_MAP(_connections, uint32_t, BaseRTMPProtocol *, i) 
 		{
 			BaseRTMPProtocol *pProtocol =	MAP_VAL(i);
-			if ((pProtocol->GetApplication() != NULL) && (strcmp(pProtocol ->clientname.c_str(),clientname.c_str())==0)) {
+			if ((pProtocol->GetApplication() != NULL) && (strcmp(pProtocol ->_clientname.c_str(),clientname.c_str())==0)) {
 				DEBUG("find  pProtocol");
 			//	pProtocol->CloseAllStream();	
 
@@ -275,6 +300,7 @@ bool RTMPAppProtocolHandler::TrackMemberSO(BaseRTMPProtocol *pFrom, Variant &req
 	SO *so=soM->GetSO(soname, false);
 	string key = format("%u",pFrom->GetId());
 	Variant propValue	;
+//	DEBUG("------------propValue=\n%s",STR(propValue.ToString()));
 	if(so->HasProperty(propName)){
 		Variant payload=so->GetPayload();
 		propValue=payload[propName];
@@ -284,13 +310,14 @@ bool RTMPAppProtocolHandler::TrackMemberSO(BaseRTMPProtocol *pFrom, Variant &req
 		propValue[key]=name;
 	}
 
+//	DEBUG("------333------M_SO_VER=\n%s",STR(M_SO_VER(request).ToString()));
 	//DEBUG("------333------propValue=\n%s",STR(propValue.ToString()));
 
 	Variant message = SOMessageFactory::GetFlexSharedObject(3, 0, 0, false, soname,1, false);
 	SOMessageFactory::AddSOPrimitiveSetProperty(message,propName, propValue);
 	M_SO_PRIMITIVES(message).IsArray(false);
 
-	//DEBUG("message=\n%s",STR(message.ToString()));
+	DEBUG("message=\n%s",STR(message.ToString()));
 
 	for (uint32_t i = 0; i < M_SO_PRIMITIVES(message).MapSize(); i++) {
 		Variant primitive = M_SO_PRIMITIVE(message, i);
@@ -324,6 +351,8 @@ bool RTMPAppProtocolHandler::TrackMemberDelSO(BaseRTMPProtocol *pFrom, Variant &
 		return false;
 	}
 //	DEBUG("------333------propValue=\n%s",STR(propValue.ToString()));
+//	DEBUG("------333------M_SO_VER=\n%s",STR(M_SO_VER(request).ToString()));
+
 
 	Variant message = SOMessageFactory::GetFlexSharedObject(3, 0, 0, false, soname,1, false);
 	SOMessageFactory::AddSOPrimitiveSetProperty(message,propName, propValue);
@@ -350,13 +379,16 @@ bool RTMPAppProtocolHandler::TrackMemberDelSO(BaseRTMPProtocol *pFrom, Variant &
 bool RTMPAppProtocolHandler::ProcessSendMessage(BaseRTMPProtocol *pFrom, Variant &request) {
 	DEBUG("request:\n%s", STR(request.ToString()));
 	
-//	uint32_t protocolId = (uint32_t)M_INVOKE_PARAM(request,1);
-//	DEBUG("protocolId =%d", protocolId);
+	Variant  contextV= M_INVOKE_PARAM(request,1);
+	if((contextV == V_NULL) || (contextV == V_UNDEFINED) || contextV == "" ){
+		return true;
+	}
+	
 	string context = M_INVOKE_PARAM(request,1);
 	Variant  clientName= M_INVOKE_PARAM(request,2);
 
 	Variant compxValue;
-	compxValue["sender"]=pFrom->clientname;
+	compxValue["sender"]=pFrom->_clientname;
 	compxValue["message"]=context;
 	compxValue["time"]=Variant::Now() ;
 	if ((clientName == V_NULL) || (clientName == V_UNDEFINED) || clientName == "" ) {
@@ -388,9 +420,8 @@ bool RTMPAppProtocolHandler::ProcessSendMessage(BaseRTMPProtocol *pFrom, Variant
 		FOR_MAP(_connections, uint32_t, BaseRTMPProtocol *, i) 
 		{
 			BaseRTMPProtocol *pProtocol =	MAP_VAL(i);
-			if ((pProtocol->GetApplication() != NULL) && (strcmp(pProtocol ->clientname.c_str(),clientname.c_str())==0)) {
+			if ((pProtocol->GetApplication() != NULL) && (strcmp(pProtocol ->_clientname.c_str(),clientname.c_str())==0)) {
 				DEBUG("find  name");
-				BaseRTMPProtocol *pProtocol =	MAP_VAL(i);
 				SendRTMPMessage(pProtocol, message);
 				break;
 			}
@@ -399,6 +430,67 @@ bool RTMPAppProtocolHandler::ProcessSendMessage(BaseRTMPProtocol *pFrom, Variant
 	}
 	return true;
 }
+
+
+bool RTMPAppProtocolHandler::ProcessSendMessageTo(BaseRTMPProtocol *pFrom, Variant &request) {
+	DEBUG("request:\n%s", STR(request.ToString()));
+	
+	Variant  contextV= M_INVOKE_PARAM(request,1);
+	if((contextV == V_NULL) || (contextV == V_UNDEFINED) || contextV == "" ){
+		return true;
+	}
+	
+	string context = M_INVOKE_PARAM(request,1);
+	Variant  clientID= M_INVOKE_PARAM(request,2);
+
+	Variant compxValue;
+	compxValue["sender"]=pFrom->_clientname;
+	compxValue["message"]=context;
+	compxValue["time"]=Variant::Now() ;
+	if ((clientID == V_NULL) || (clientID == V_UNDEFINED) || clientID == "" ) {
+		compxValue["clientID"]="";
+	}else{
+		compxValue["clientID"]=clientID;
+	}
+
+	Variant parameters;
+	parameters.PushToArray(Variant());
+	parameters["message"] = Variant(compxValue);
+	
+	DEBUG("parameters:\n%s", STR(parameters.ToString()));
+	Variant message = GenericMessageFactory::GetInvoke(3, 0, 0, false, 0,
+	"OnMessage", parameters);
+
+	DEBUG("message:\n%s", STR(message.ToString()));
+	
+	if ((clientID == V_NULL) || (clientID == V_UNDEFINED) || clientID == "" ) {
+		FOR_MAP(_connections, uint32_t, BaseRTMPProtocol *, i) 
+		{
+			BaseRTMPProtocol *pProtocol =	MAP_VAL(i);
+			SendRTMPMessage(pProtocol, message);
+		}
+	}
+	else{
+		uint32_t clientid=0;
+		if(clientID.IsNumeric()){
+		 	clientid=M_INVOKE_PARAM(request,2);}
+		else{
+			WARN("clientID is not number type");
+			return false;
+		}
+		if(MAP_HAS1(_connections,clientID)){
+			BaseRTMPProtocol *pProtocol =	_connections[clientid];
+			SendRTMPMessage(pProtocol, message);
+			SendRTMPMessage(pFrom, message);
+		}else{
+			WARN("can't find  clientID %u",clientid);
+		}
+	}
+	return true;
+}
+
+
+
 
 #endif /* HAS_PROTOCOL_RTMP */
 
